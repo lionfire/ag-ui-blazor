@@ -16,20 +16,19 @@
         {
             var message = Messages[i];
             var index = i;
-            <div class="@GetMessageContainerClass(message)">
+            var showTitle = ShouldShowSenderTitle(message);
+            var timestamp = FormatTimestamp(message);
+            var hasHeader = showTitle || !string.IsNullOrEmpty(timestamp);
+            var containerClass = GetMessageContainerClass(message) + (hasHeader ? " has-header" : "");
+            <div class="@containerClass">
                 @if (!IsUserMessage(message) || OwnMessagesAlignment == OwnMessagesAlignment.Left)
                 {
-                    <MudAvatar Size="@SmallSize" Class="@GetAvatarClass(message)">
+                    <MudAvatar Size="@SmallSize" Class="@GetAvatarClass(message)" Style="@(hasHeader ? "margin-top: 22px;" : "")">
                         <MudIcon Icon="@GetAvatarIcon(message)" Size="@SmallSize" />
                     </MudAvatar>
                 }
 
                 <div class="message-bubble-wrapper">
-                    @{
-                        var showTitle = ShouldShowSenderTitle(message);
-                        var timestamp = FormatTimestamp(message);
-                        var hasHeader = showTitle || !string.IsNullOrEmpty(timestamp);
-                    }
                     @if (hasHeader)
                     {
                         <div class="message-header">
@@ -99,7 +98,7 @@
 
                 @if (IsUserMessage(message) && OwnMessagesAlignment == OwnMessagesAlignment.Right)
                 {
-                    <MudAvatar Size="@SmallSize" Class="message-avatar user-avatar">
+                    <MudAvatar Size="@SmallSize" Class="message-avatar user-avatar" Style="@(hasHeader ? "margin-top: 22px;" : "")">
                         <MudIcon Icon="@UserAvatarIcon" Size="@SmallSize" />
                     </MudAvatar>
                 }

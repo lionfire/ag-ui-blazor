@@ -49,7 +49,6 @@
 /* Avatar styling */
 .message-avatar {
     flex-shrink: 0;
-    margin-top: 4px;
 }
 
 .message-avatar.user-avatar {
