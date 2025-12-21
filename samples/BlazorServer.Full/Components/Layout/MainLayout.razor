@@ -30,7 +30,9 @@
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent Style="padding-top: 80px; padding-left: 16px; padding-right: 16px; padding-bottom: 0;">
-        @Body
+        <CascadingValue Name="IsDarkMode" Value="_isDarkMode">
+            @Body
+        </CascadingValue>
     </MudMainContent>
 </MudLayout>
 
