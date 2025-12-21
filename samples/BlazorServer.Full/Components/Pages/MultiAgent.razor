@@ -37,19 +37,20 @@
     </div>
 
     <div style="flex: 1; min-height: 0; position: relative;">
-        <MudMessageList Messages="@_messages"
-                        IsStreaming="@_isStreaming"
-                        AutoScrollEnabled="true"
-                        SenderTitleDisplay="SenderTitleDisplayMode.Auto"
-                        OwnMessagesAlignment="OwnMessagesAlignment.Left"
-                        EmptyMessage="Start a group chat with multiple AI agents!"
-                        OnRegenerate="@HandleRegenerateAsync"
-                        OnStop="@HandleStopAsync" />
-    </div>
-
-    <div style="padding-top: 8px;">
-        <MudMessageInput OnSend="@SendMessageAsync"
-                         Disabled="@(_selectedAgentClient == null)"
-                         Placeholder="@GetInputPlaceholder()" />
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column;">
+            <MudMessageList Messages="@_messages"
+                            IsStreaming="@_isStreaming"
+                            AutoScrollEnabled="true"
+                            SenderTitleDisplay="SenderTitleDisplayMode.Auto"
+                            OwnMessagesAlignment="OwnMessagesAlignment.Left"
+                            EmptyMessage="Start a group chat with multiple AI agents!"
+                            OnRegenerate="@HandleRegenerateAsync"
+                            OnStop="@HandleStopAsync" />
+            <div style="flex: 0 0 auto; padding-top: 8px;">
+                <MudMessageInput OnSend="@SendMessageAsync"
+                                 Disabled="@(_selectedAgentClient == null)"
+                                 Placeholder="@GetInputPlaceholder()" />
+            </div>
+        </div>
     </div>
 </MudContainer>
