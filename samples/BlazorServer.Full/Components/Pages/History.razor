@@ -2,13 +2,70 @@
 
 <PageTitle>Conversation History - AG-UI Blazor</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4" Style="height: calc(100vh - 150px);">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Style="flex: 1; display: flex; flex-direction: column;">
     <MudText Typo="Typo.h5" GutterBottom="true">Conversation History</MudText>
     <MudText Typo="Typo.body2" Class="mb-4">
         Browse and manage your conversation history with sidebar navigation.
     </MudText>
 
-    <div style="height: calc(100% - 100px);">
-        <MudAgentChatWithHistory AgentName="assistant" />
+    <div style="flex: 1; min-height: 0; position: relative;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
+            <MudAgentChatWithHistory AgentName="assistant"
+                                     Conversations="@_conversations"
+                                     SelectedConversationId="@_selectedConversationId"
+                                     OnNewConversation="HandleNewConversation"
+                                     OnConversationSelected="HandleConversationSelected"
+                                     OnConversationDeleted="HandleConversationDeleted" />
+        </div>
     </div>
 </MudContainer>
+
+@code {
+    private List<LionFire.AgUi.Blazor.Models.ConversationMetadata> _conversations = new();
+    private string? _selectedConversationId;
+    private int _conversationCounter = 0;
+
+    protected override void OnInitialized()
+    {
+        // Start with a default conversation
+        CreateNewConversation();
+    }
+
+    private void HandleNewConversation()
+    {
+        CreateNewConversation();
+        StateHasChanged();
+    }
+
+    private void CreateNewConversation()
+    {
+        _conversationCounter++;
+        var now = DateTimeOffset.UtcNow;
+        var newConversation = new LionFire.AgUi.Blazor.Models.ConversationMetadata(
+            Id: Guid.NewGuid().ToString(),
+            AgentName: "assistant",
+            Title: $"Conversation {_conversationCounter}",
+            CreatedAt: now,
+            LastModifiedAt: now,
+            MessageCount: 0,
+            Tags: Array.Empty<string>()
+        );
+        _conversations.Insert(0, newConversation);
+        _selectedConversationId = newConversation.Id;
+    }
+
+    private void HandleConversationSelected(LionFire.AgUi.Blazor.Models.ConversationMetadata conversation)
+    {
+        _selectedConversationId = conversation.Id;
+    }
+
+    private void HandleConversationDeleted(LionFire.AgUi.Blazor.Models.ConversationMetadata conversation)
+    {
+        _conversations.Remove(conversation);
+        if (_selectedConversationId == conversation.Id)
+        {
+            _selectedConversationId = _conversations.FirstOrDefault()?.Id;
+        }
+        StateHasChanged();
+    }
+}
