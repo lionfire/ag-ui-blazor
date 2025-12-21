@@ -81,42 +81,28 @@
     color: var(--mud-palette-text-primary);
 }
 
-/* Message header - only show when has content */
+/* Message header - above the bubble */
 .message-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    padding-left: 4px;
+    margin-bottom: 4px;
 }
 
 .message-header:empty {
     display: none;
 }
 
-.message-header:has(*) {
-    margin-bottom: 4px;
-}
-
 .message-role {
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
+    color: var(--mud-palette-text-secondary);
 }
 
 .message-time {
-    font-size: 0.75rem;
-    opacity: 0.7;
-}
-
-/* User bubble text colors for header */
-.user-bubble .message-role,
-.user-bubble .message-time {
-    color: var(--mud-palette-text-secondary);
-}
-
-/* Assistant bubble text colors for header */
-.assistant-bubble .message-role,
-.assistant-bubble .message-time {
-    color: var(--mud-palette-text-secondary);
+    font-size: 0.7rem;
+    color: var(--mud-palette-text-disabled);
 }
 
 /* Message content */
@@ -224,9 +210,7 @@
     }
 
     .message-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
+        gap: 6px;
     }
 
     .message-avatar {

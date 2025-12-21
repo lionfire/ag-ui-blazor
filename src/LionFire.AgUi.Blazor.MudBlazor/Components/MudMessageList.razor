@@ -25,25 +25,25 @@
                 }
 
                 <div class="message-bubble-wrapper">
+                    @{
+                        var showTitle = ShouldShowSenderTitle(message);
+                        var timestamp = FormatTimestamp(message);
+                        var hasHeader = showTitle || !string.IsNullOrEmpty(timestamp);
+                    }
+                    @if (hasHeader)
+                    {
+                        <div class="message-header">
+                            @if (showTitle)
+                            {
+                                <span class="message-role">@GetRoleDisplayName(message)</span>
+                            }
+                            @if (!string.IsNullOrEmpty(timestamp))
+                            {
+                                <span class="message-time">@timestamp</span>
+                            }
+                        </div>
+                    }
                     <MudPaper Class="@GetMessageBubbleClass(message)" Elevation="1" Style="@GetMessageBubbleStyle(message)">
-                        @{
-                            var showTitle = ShouldShowSenderTitle(message);
-                            var timestamp = FormatTimestamp(message);
-                            var hasHeader = showTitle || !string.IsNullOrEmpty(timestamp);
-                        }
-                        @if (hasHeader)
-                        {
-                            <div class="message-header">
-                                @if (showTitle)
-                                {
-                                    <span class="message-role">@GetRoleDisplayName(message)</span>
-                                }
-                                @if (!string.IsNullOrEmpty(timestamp))
-                                {
-                                    <span class="message-time">@timestamp</span>
-                                }
-                            </div>
-                        }
                         @if (IsEditing(index))
                         {
                             <div class="message-edit">
