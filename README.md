@@ -13,7 +13,7 @@ LionFire.AgUi.Blazor provides Blazor components and services for displaying and 
 
 ## Status
 
-Early WIP.
+Experimental vibe code. See [Plan Status](#plan-status).
 
 ## Packages
 
