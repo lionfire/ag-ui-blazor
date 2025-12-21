@@ -20,7 +20,7 @@ public partial class MudMessageInput : ComponentBase, IAsyncDisposable
     private IJSRuntime JSRuntime { get; set; } = default!;
 
     // MudBlazor constants for use in razor template
-    protected static string SendIcon => Icons.Material.Filled.Send;
+    protected static string SendIcon => Icons.Material.Filled.ArrowUpward;
     protected static Variant OutlinedVariant => Variant.Outlined;
     protected static Color PrimaryColor => Color.Primary;
 
