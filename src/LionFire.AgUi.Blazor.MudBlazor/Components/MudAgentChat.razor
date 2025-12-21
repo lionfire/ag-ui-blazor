@@ -1,0 +1,53 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@implements IDisposable
+
+<div class="@GetContainerClass()"
+     style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; overflow: hidden;"
+     @attributes="AdditionalAttributes"
+     @onkeydown="HandleKeyDown"
+     tabindex="0">
+<MudPaper Elevation="4" Style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="@SeverityError"
+                  Class="mud-agent-chat-error"
+                  Variant="@AlertVariant"
+                  ShowCloseIcon="true"
+                  CloseIconClicked="ClearError">
+            @_errorMessage
+        </MudAlert>
+    }
+
+    @if (ShowConnectionStatus)
+    {
+        <div class="mud-agent-chat-status">
+            <MudConnectionStatus State="@_connectionState" />
+        </div>
+    }
+
+    <div class="mud-agent-chat-messages">
+        <MudMessageList Messages="@_messages"
+                        IsStreaming="@_isStreaming"
+                        AutoScrollEnabled="true"
+                        EmptyMessage="@GetEmptyMessage()"
+                        OnRegenerate="@HandleRegenerateAsync"
+                        OnEdit="@HandleEditAsync"
+                        OnStop="@HandleStopAsync" />
+    </div>
+
+    @if (_messageQueue.Count > 0)
+    {
+        <div class="mud-agent-chat-queue">
+            <MudChip T="string" Color="@InfoColor" Size="@SmallSize" Icon="@QueueIcon">
+                @_messageQueue.Count message@(_messageQueue.Count > 1 ? "s" : "") queued
+            </MudChip>
+        </div>
+    }
+
+    <div class="mud-agent-chat-input">
+        <MudMessageInput OnSend="@SendMessageAsync"
+                         Disabled="@(_connectionState == Models.ConnectionState.Error || _agent == null)"
+                         Placeholder="@GetInputPlaceholder()" />
+    </div>
+</MudPaper>
+</div>

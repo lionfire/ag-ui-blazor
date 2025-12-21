@@ -1,0 +1,33 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mb-4">
+        An error occurred while processing your request.
+    </MudAlert>
+
+    @if (ShowRequestId)
+    {
+        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+            <strong>Request ID:</strong> @RequestId
+        </MudText>
+    }
+
+    <MudText Typo="Typo.body2" Class="mt-4">
+        For local debugging, enable the Development environment by setting
+        ASPNETCORE_ENVIRONMENT to Development and restarting the app.
+    </MudText>
+</MudContainer>
+
+@code{
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

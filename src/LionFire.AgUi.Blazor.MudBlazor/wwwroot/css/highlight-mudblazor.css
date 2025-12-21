@@ -1,0 +1,312 @@
+/**
+ * MudBlazor-compatible syntax highlighting theme for highlight.js
+ * Designed to work with both light and dark MudBlazor themes.
+ */
+
+/* Base styles */
+.hljs {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+/* === Light Theme (Default) === */
+
+/* Comments */
+.hljs-comment,
+.hljs-quote {
+    color: #6a737d;
+    font-style: italic;
+}
+
+/* Keywords */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+    color: #d73a49;
+    font-weight: 500;
+}
+
+/* Strings */
+.hljs-string,
+.hljs-doctag,
+.hljs-template-variable {
+    color: #032f62;
+}
+
+/* Numbers */
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-tag,
+.hljs-tag .hljs-attr {
+    color: #005cc5;
+}
+
+/* Functions */
+.hljs-title,
+.hljs-section,
+.hljs-attribute,
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+    color: #6f42c1;
+    font-weight: 500;
+}
+
+/* Built-in types and classes */
+.hljs-built_in,
+.hljs-builtin-name {
+    color: #005cc5;
+}
+
+/* Names */
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-tag {
+    color: #22863a;
+}
+
+/* Meta and preprocessor */
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-meta .hljs-string {
+    color: #735c0f;
+}
+
+/* Symbols and operators */
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+    color: #e36209;
+}
+
+/* Additions and deletions (diff) */
+.hljs-addition {
+    color: #22863a;
+    background-color: #f0fff4;
+}
+
+.hljs-deletion {
+    color: #b31d28;
+    background-color: #ffeef0;
+}
+
+/* Emphasis */
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+
+/* Regex */
+.hljs-regexp {
+    color: #032f62;
+}
+
+/* Params */
+.hljs-params {
+    color: inherit;
+}
+
+/* Property */
+.hljs-property {
+    color: #005cc5;
+}
+
+/* Punctuation */
+.hljs-punctuation {
+    color: #24292e;
+}
+
+/* === Dark Theme === */
+/* Applied when system prefers dark mode or MudBlazor is in dark mode */
+
+@media (prefers-color-scheme: dark) {
+    .hljs {
+        color: #e1e4e8;
+    }
+
+    /* Comments */
+    .hljs-comment,
+    .hljs-quote {
+        color: #8b949e;
+    }
+
+    /* Keywords */
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-subst {
+        color: #ff7b72;
+    }
+
+    /* Strings */
+    .hljs-string,
+    .hljs-doctag,
+    .hljs-template-variable {
+        color: #a5d6ff;
+    }
+
+    /* Numbers */
+    .hljs-number,
+    .hljs-literal,
+    .hljs-variable,
+    .hljs-template-tag,
+    .hljs-tag .hljs-attr {
+        color: #79c0ff;
+    }
+
+    /* Functions */
+    .hljs-title,
+    .hljs-section,
+    .hljs-attribute,
+    .hljs-type,
+    .hljs-class .hljs-title,
+    .hljs-title.class_ {
+        color: #d2a8ff;
+    }
+
+    /* Built-in types and classes */
+    .hljs-built_in,
+    .hljs-builtin-name {
+        color: #79c0ff;
+    }
+
+    /* Names */
+    .hljs-name,
+    .hljs-selector-id,
+    .hljs-selector-class,
+    .hljs-tag {
+        color: #7ee787;
+    }
+
+    /* Meta and preprocessor */
+    .hljs-meta,
+    .hljs-meta .hljs-keyword,
+    .hljs-meta .hljs-string {
+        color: #ffa657;
+    }
+
+    /* Symbols and operators */
+    .hljs-symbol,
+    .hljs-bullet,
+    .hljs-link {
+        color: #ffa657;
+    }
+
+    /* Additions and deletions (diff) */
+    .hljs-addition {
+        color: #7ee787;
+        background-color: rgba(46, 160, 67, 0.15);
+    }
+
+    .hljs-deletion {
+        color: #ffa198;
+        background-color: rgba(248, 81, 73, 0.15);
+    }
+
+    /* Regex */
+    .hljs-regexp {
+        color: #a5d6ff;
+    }
+
+    /* Property */
+    .hljs-property {
+        color: #79c0ff;
+    }
+
+    /* Punctuation */
+    .hljs-punctuation {
+        color: #c9d1d9;
+    }
+}
+
+/* MudBlazor theme-aware classes */
+/* These can be used when MudBlazor theme is explicitly set */
+
+.mud-theme-dark .hljs {
+    color: #e1e4e8;
+}
+
+.mud-theme-dark .hljs-comment,
+.mud-theme-dark .hljs-quote {
+    color: #8b949e;
+}
+
+.mud-theme-dark .hljs-keyword,
+.mud-theme-dark .hljs-selector-tag,
+.mud-theme-dark .hljs-subst {
+    color: #ff7b72;
+}
+
+.mud-theme-dark .hljs-string,
+.mud-theme-dark .hljs-doctag,
+.mud-theme-dark .hljs-template-variable {
+    color: #a5d6ff;
+}
+
+.mud-theme-dark .hljs-number,
+.mud-theme-dark .hljs-literal,
+.mud-theme-dark .hljs-variable,
+.mud-theme-dark .hljs-template-tag,
+.mud-theme-dark .hljs-tag .hljs-attr {
+    color: #79c0ff;
+}
+
+.mud-theme-dark .hljs-title,
+.mud-theme-dark .hljs-section,
+.mud-theme-dark .hljs-attribute,
+.mud-theme-dark .hljs-type,
+.mud-theme-dark .hljs-class .hljs-title,
+.mud-theme-dark .hljs-title.class_ {
+    color: #d2a8ff;
+}
+
+.mud-theme-dark .hljs-built_in,
+.mud-theme-dark .hljs-builtin-name {
+    color: #79c0ff;
+}
+
+.mud-theme-dark .hljs-name,
+.mud-theme-dark .hljs-selector-id,
+.mud-theme-dark .hljs-selector-class,
+.mud-theme-dark .hljs-tag {
+    color: #7ee787;
+}
+
+.mud-theme-dark .hljs-meta,
+.mud-theme-dark .hljs-meta .hljs-keyword,
+.mud-theme-dark .hljs-meta .hljs-string {
+    color: #ffa657;
+}
+
+.mud-theme-dark .hljs-symbol,
+.mud-theme-dark .hljs-bullet,
+.mud-theme-dark .hljs-link {
+    color: #ffa657;
+}
+
+.mud-theme-dark .hljs-addition {
+    color: #7ee787;
+    background-color: rgba(46, 160, 67, 0.15);
+}
+
+.mud-theme-dark .hljs-deletion {
+    color: #ffa198;
+    background-color: rgba(248, 81, 73, 0.15);
+}
+
+.mud-theme-dark .hljs-regexp {
+    color: #a5d6ff;
+}
+
+.mud-theme-dark .hljs-property {
+    color: #79c0ff;
+}
+
+.mud-theme-dark .hljs-punctuation {
+    color: #c9d1d9;
+}

@@ -1,0 +1,62 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@using LionFire.AgUi.Blazor.ErrorHandling
+@using MudBlazor
+
+@if (Error != null)
+{
+    <MudAlert Severity="GetSeverity()"
+              Variant="AlertVariant"
+              Dense="Dense"
+              Class="@GetAlertClass()">
+        <div class="d-flex flex-column">
+            <div class="d-flex align-center justify-space-between">
+                <div class="d-flex align-center gap-2">
+                    <MudIcon Icon="@GetIcon()" Size="IconSize" />
+                    <MudText Typo="MessageTypo">@Error.Message</MudText>
+                </div>
+                @if (Error.IsRetryable && ShowRetryButton)
+                {
+                    <MudButton Variant="RetryButtonVariant"
+                               Color="ColorPrimary"
+                               Size="ButtonSizeSmall"
+                               StartIcon="@IconRefresh"
+                               OnClick="@HandleRetry"
+                               Disabled="@IsRetrying">
+                        @if (IsRetrying)
+                        {
+                            <MudProgressCircular Size="ProgressSizeSmall" Indeterminate="true" Class="mr-2" />
+                            <span>Retrying...</span>
+                        }
+                        else
+                        {
+                            <span>Retry</span>
+                        }
+                    </MudButton>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(Error.ActionableGuidance) && ShowGuidance)
+            {
+                <MudText Typo="GuidanceTypo" Class="mud-text-secondary mt-1">
+                    @Error.ActionableGuidance
+                </MudText>
+            }
+
+            @if (Error.RetryAfter.HasValue && Error.IsRetryable)
+            {
+                <MudText Typo="GuidanceTypo" Class="mud-text-secondary mt-1">
+                    Try again in @FormatRetryAfter(Error.RetryAfter.Value)
+                </MudText>
+            }
+
+            @if (ShowTechnicalDetails && !string.IsNullOrEmpty(Error.TechnicalDetails))
+            {
+                <MudExpansionPanels Class="mt-2" Dense="true">
+                    <MudExpansionPanel Text="Technical Details">
+                        <pre class="technical-details">@Error.TechnicalDetails</pre>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+        </div>
+    </MudAlert>
+}

@@ -1,0 +1,70 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="mud-event-log @Class" @attributes="AdditionalAttributes">
+    <MudPaper Class="event-log-container" Elevation="0" Outlined="true">
+        <div class="event-log-header">
+            <MudText Typo="@TypoSubtitle2" Class="flex-grow-1">@Title</MudText>
+            @if (ShowClearButton && Events.Count > 0)
+            {
+                <MudIconButton Icon="@IconDelete"
+                               Size="@SmallSize"
+                               Color="@TertiaryColor"
+                               OnClick="HandleClearAsync"
+                               title="Clear events" />
+            }
+        </div>
+
+        <div class="event-log-content">
+            @if (Events.Count == 0)
+            {
+                <MudText Typo="@TypoBody2" Color="@TertiaryColor" Class="pa-2">
+                    @EmptyMessage
+                </MudText>
+            }
+            else
+            {
+                <MudList T="EventLogEntry" Dense="true" Class="event-list">
+                    @foreach (var evt in GetVisibleEvents())
+                    {
+                        <MudListItem T="EventLogEntry" Class="@GetEventClass(evt)">
+                            <div class="event-item">
+                                <MudIcon Icon="@GetEventIcon(evt.Level)"
+                                         Size="@SmallSize"
+                                         Color="@GetEventColor(evt.Level)"
+                                         Class="event-icon" />
+                                <div class="event-details">
+                                    <div class="event-header">
+                                        <MudText Typo="@TypoCaption" Color="@TertiaryColor">
+                                            @evt.Timestamp.ToString("HH:mm:ss.fff")
+                                        </MudText>
+                                        <MudText Typo="@TypoCaption" Class="event-type">
+                                            @evt.EventType
+                                        </MudText>
+                                    </div>
+                                    <MudText Typo="@TypoBody2" Class="event-message">
+                                        @evt.Message
+                                    </MudText>
+                                    @if (!string.IsNullOrEmpty(evt.Details))
+                                    {
+                                        <MudText Typo="@TypoCaption" Color="@TertiaryColor" Class="event-extra">
+                                            @evt.Details
+                                        </MudText>
+                                    }
+                                </div>
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+        </div>
+
+        @if (Events.Count > MaxVisibleEvents)
+        {
+            <div class="event-log-footer">
+                <MudText Typo="@TypoCaption" Color="@TertiaryColor">
+                    Showing @MaxVisibleEvents of @Events.Count events
+                </MudText>
+            </div>
+        }
+    </MudPaper>
+</div>

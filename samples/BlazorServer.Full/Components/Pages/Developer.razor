@@ -1,0 +1,101 @@
+@page "/developer"
+@using LionFire.AgUi.Blazor.MudBlazor.Components
+
+<PageTitle>Developer Tools - AG-UI Blazor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4" Style="height: calc(100vh - 150px);">
+    <MudText Typo="Typo.h5" GutterBottom="true">Developer Tools</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Event logging and state inspection tools for debugging your AI chat applications.
+    </MudText>
+
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 400px;">
+                <MudText Typo="Typo.h6" GutterBottom="true">Event Log</MudText>
+                <MudEventLog Events="_events" MaxVisibleEvents="50" OnClear="ClearEvents" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 400px;">
+                <MudText Typo="Typo.h6" GutterBottom="true">State Viewer</MudText>
+                <MudStateViewer State="_state" />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" />
+
+    <MudPaper Elevation="2" Class="pa-4">
+        <MudText Typo="Typo.h6" GutterBottom="true">Demo Actions</MudText>
+        <MudStack Row="true" Spacing="2" Class="mb-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddEvent">Add Event</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="UpdateState">Update State</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="ClearAll">Clear All</MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<EventLogEntry> _events = new();
+    private Dictionary<string, object?> _state = new()
+    {
+        ["isConnected"] = true,
+        ["agentName"] = "assistant",
+        ["messageCount"] = 0,
+        ["lastActivity"] = DateTime.Now
+    };
+
+    private int _eventCounter = 0;
+
+    private void AddEvent()
+    {
+        _eventCounter++;
+        var eventTypes = new[] { "message_sent", "message_received", "connection_changed", "error", "info" };
+        var eventType = eventTypes[_eventCounter % eventTypes.Length];
+        var levels = new[] { EventLogLevel.Info, EventLogLevel.Debug, EventLogLevel.Warning, EventLogLevel.Error };
+        var level = levels[_eventCounter % levels.Length];
+
+        _events.Add(new EventLogEntry(
+            Timestamp: DateTimeOffset.Now,
+            EventType: eventType,
+            Message: $"Sample event #{_eventCounter}",
+            Level: level,
+            Details: _eventCounter % 3 == 0 ? $"Additional details for event #{_eventCounter}" : null
+        ));
+
+        _state["messageCount"] = _eventCounter;
+        _state["lastActivity"] = DateTime.Now;
+    }
+
+    private void UpdateState()
+    {
+        _state["timestamp"] = DateTime.Now;
+        _state["randomValue"] = Random.Shared.Next(1, 100);
+        _state["nestedObject"] = new Dictionary<string, object?>
+        {
+            ["level1"] = new Dictionary<string, object?>
+            {
+                ["level2"] = "deep value"
+            }
+        };
+    }
+
+    private void ClearEvents()
+    {
+        _events.Clear();
+        _eventCounter = 0;
+    }
+
+    private void ClearAll()
+    {
+        ClearEvents();
+        _state = new()
+        {
+            ["isConnected"] = true,
+            ["agentName"] = "assistant",
+            ["messageCount"] = 0,
+            ["lastActivity"] = DateTime.Now
+        };
+    }
+}

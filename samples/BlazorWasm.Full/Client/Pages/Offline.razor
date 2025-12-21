@@ -1,0 +1,135 @@
+@page "/offline"
+@inject IConnectionMonitor ConnectionMonitor
+@inject IOfflineMessageQueue OfflineQueue
+@implements IDisposable
+
+<PageTitle>Offline Mode - AG-UI WASM</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Offline Mode Demo</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Test offline capabilities. Messages sent while offline are queued and sent when reconnected.
+    </MudText>
+
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" GutterBottom="true">Connection Status</MudText>
+
+                <MudStack Spacing="3">
+                    <MudAlert Severity="@GetConnectionSeverity()" Dense="true">
+                        @GetConnectionStatusText()
+                    </MudAlert>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               FullWidth="true"
+                               OnClick="TryReconnect"
+                               Disabled="@(_connectionState == ConnectionState.Connected || _connectionState == ConnectionState.Reconnecting)">
+                        Try Reconnect
+                    </MudButton>
+
+                    <MudText Typo="Typo.caption" Class="mt-2">
+                        Queued Messages: @_queuedCount
+                    </MudText>
+
+                    @if (_queuedCount > 0)
+                    {
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Warning"
+                                   Size="Size.Small"
+                                   OnClick="ClearQueue">
+                            Clear Queue
+                        </MudButton>
+                    }
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="8">
+            <MudPaper Elevation="2" Style="height: 500px;">
+                <MudAgentChat AgentName="assistant" />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudPaper Elevation="1" Class="pa-4 mt-4">
+        <MudText Typo="Typo.h6" GutterBottom="true">How Offline Mode Works</MudText>
+        <MudList T="string" Dense="true">
+            <MudListItem Icon="@Icons.Material.Filled.Info">
+                When offline, messages are stored in a local queue
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Info">
+                The queue persists in browser storage (LocalStorage)
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Info">
+                When connection is restored, queued messages are sent automatically
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Info">
+                Automatic reconnection attempts with exponential backoff
+            </MudListItem>
+        </MudList>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private ConnectionState _connectionState = ConnectionState.Disconnected;
+    private int _queuedCount = 0;
+
+    protected override void OnInitialized()
+    {
+        ConnectionMonitor.StateChanged += OnConnectionStateChanged;
+        OfflineQueue.MessageEnqueued += OnQueueChanged;
+        OfflineQueue.MessageDequeued += OnQueueChanged;
+        _connectionState = ConnectionMonitor.CurrentState;
+        _queuedCount = OfflineQueue.Count;
+    }
+
+    private void OnConnectionStateChanged(object? sender, ConnectionStateChangedEventArgs e)
+    {
+        _connectionState = e.NewState;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnQueueChanged(object? sender, QueuedMessage e)
+    {
+        _queuedCount = OfflineQueue.Count;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task TryReconnect()
+    {
+        await ConnectionMonitor.TryReconnectAsync();
+    }
+
+    private async Task ClearQueue()
+    {
+        await OfflineQueue.ClearAsync();
+    }
+
+    private Severity GetConnectionSeverity() => _connectionState switch
+    {
+        ConnectionState.Connected => Severity.Success,
+        ConnectionState.Connecting or ConnectionState.Reconnecting => Severity.Warning,
+        ConnectionState.Disconnected => Severity.Info,
+        ConnectionState.Error => Severity.Error,
+        _ => Severity.Normal
+    };
+
+    private string GetConnectionStatusText() => _connectionState switch
+    {
+        ConnectionState.Connected => "Connected",
+        ConnectionState.Connecting => "Connecting...",
+        ConnectionState.Reconnecting => "Reconnecting...",
+        ConnectionState.Disconnected => "Disconnected (Offline)",
+        ConnectionState.Error => "Connection Error",
+        _ => "Unknown"
+    };
+
+    public void Dispose()
+    {
+        ConnectionMonitor.StateChanged -= OnConnectionStateChanged;
+        OfflineQueue.MessageEnqueued -= OnQueueChanged;
+        OfflineQueue.MessageDequeued -= OnQueueChanged;
+    }
+}

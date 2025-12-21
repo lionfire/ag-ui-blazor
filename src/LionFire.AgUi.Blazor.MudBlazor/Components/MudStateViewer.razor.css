@@ -1,0 +1,70 @@
+.mud-state-viewer {
+    width: 100%;
+}
+
+.state-viewer-container {
+    max-height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.state-viewer-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--mud-palette-divider);
+}
+
+.state-viewer-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.state-table {
+    width: 100%;
+}
+
+.state-key {
+    width: 30%;
+    vertical-align: top;
+    padding: 8px !important;
+}
+
+.key-text {
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.state-value {
+    width: 70%;
+    vertical-align: top;
+    padding: 8px !important;
+}
+
+.value-text {
+    word-break: break-word;
+}
+
+.expandable-value {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.value-code {
+    margin: 0;
+    padding: 8px;
+    background-color: var(--mud-palette-surface);
+    border-radius: 4px;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.state-viewer-footer {
+    padding: 4px 12px;
+    border-top: 1px solid var(--mud-palette-divider);
+    text-align: center;
+}

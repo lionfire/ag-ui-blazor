@@ -1,0 +1,25 @@
+.mud-agent-selector {
+    min-width: 200px;
+}
+
+.agent-select {
+    width: 100%;
+}
+
+.agent-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+}
+
+.agent-avatar {
+    flex-shrink: 0;
+}
+
+.agent-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}

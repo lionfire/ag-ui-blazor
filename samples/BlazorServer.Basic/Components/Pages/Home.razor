@@ -1,0 +1,14 @@
+@page "/"
+
+<PageTitle>AI Chat Demo</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Style="height: calc(100vh - 100px);">
+    <MudText Typo="Typo.h5" GutterBottom="true">AI Chat Demo</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Basic chat interface demonstrating streaming responses and real-time AI interaction.
+    </MudText>
+
+    <div style="height: calc(100% - 80px); position: relative;">
+        <MudAgentChat AgentName="assistant" ShowConnectionStatus="true" />
+    </div>
+</MudContainer>

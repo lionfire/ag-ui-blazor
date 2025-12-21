@@ -1,0 +1,199 @@
+@page "/multiagent"
+@using System.Text
+@using LionFire.AgUi.Blazor.Abstractions
+@using LionFire.AgUi.Blazor.Models
+@using Microsoft.Extensions.AI
+@using Microsoft.Extensions.Logging
+@implements IDisposable
+
+<PageTitle>Multi-Agent - AG-UI WASM</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4" Style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+    <MudText Typo="Typo.h5" GutterBottom="true">Multi-Agent Group Chat</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Chat with multiple AI agents in the same conversation. Select which agent should respond.
+    </MudText>
+
+    <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative;">
+        <MudPaper Elevation="4" Style="display: flex; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden;">
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error"
+                          Class="ma-2"
+                          Variant="Variant.Outlined"
+                          ShowCloseIcon="true"
+                          CloseIconClicked="ClearError">
+                    @_errorMessage
+                </MudAlert>
+            }
+
+            <div class="agent-selector pa-2" style="border-bottom: 1px solid var(--mud-palette-lines-default);">
+                <MudText Typo="Typo.caption" Class="mb-1">Select agent to respond:</MudText>
+                <MudChipSet T="string" @bind-SelectedValue="_selectedAgent" SelectionMode="SelectionMode.SingleSelection" Class="d-flex flex-wrap gap-1">
+                    @foreach (var agent in _agents)
+                    {
+                        <MudChip T="string"
+                                 Value="@agent.Name"
+                                 Icon="@agent.Icon"
+                                 Color="@(agent.Name == _selectedAgent ? agent.Color : Color.Default)"
+                                 Variant="@(agent.Name == _selectedAgent ? Variant.Filled : Variant.Outlined)">
+                            @agent.DisplayName
+                        </MudChip>
+                    }
+                </MudChipSet>
+            </div>
+
+            <div style="flex: 1; min-height: 0; overflow: hidden;">
+                <MudMessageList Messages="@_messages"
+                                IsStreaming="@_isStreaming"
+                                AutoScrollEnabled="true"
+                                SenderTitleDisplay="SenderTitleDisplayMode.Auto"
+                                EmptyMessage="Start a group chat with multiple AI agents!"
+                                OnRegenerate="@HandleRegenerateAsync"
+                                OnStop="@HandleStopAsync" />
+            </div>
+
+            <div class="pa-2" style="border-top: 1px solid var(--mud-palette-lines-default);">
+                <MudMessageInput OnSend="@SendMessageAsync"
+                                 Disabled="@(_selectedAgentClient == null)"
+                                 Placeholder="@GetInputPlaceholder()" />
+            </div>
+        </MudPaper>
+    </div>
+</MudContainer>
+
+@code {
+    private record AgentConfig(string Name, string DisplayName, string Icon, Color Color);
+
+    private readonly List<AgentConfig> _agents = new()
+    {
+        new AgentConfig("assistant", "Assistant", Icons.Material.Filled.Assistant, Color.Primary),
+        new AgentConfig("coder", "Coder", Icons.Material.Filled.Code, Color.Secondary),
+        new AgentConfig("researcher", "Researcher", Icons.Material.Filled.Science, Color.Tertiary)
+    };
+
+    [Inject] private IAgentClientFactory AgentFactory { get; set; } = null!;
+    [Inject] private ILogger<MultiAgent> Logger { get; set; } = null!;
+
+    private readonly List<ChatMessage> _messages = new();
+    private readonly Dictionary<string, IChatClient?> _agentClients = new();
+    private string? _selectedAgent;
+    private IChatClient? _selectedAgentClient => _selectedAgent != null && _agentClients.TryGetValue(_selectedAgent, out var client) ? client : null;
+    private bool _isStreaming;
+    private string? _errorMessage;
+    private CancellationTokenSource? _cts;
+    private bool _disposed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var agent in _agents)
+        {
+            try
+            {
+                var client = await AgentFactory.GetAgentAsync(agent.Name);
+                _agentClients[agent.Name] = client;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to initialize agent: {AgentName}", agent.Name);
+                _agentClients[agent.Name] = null;
+            }
+        }
+        _selectedAgent = _agents.FirstOrDefault(a => _agentClients.GetValueOrDefault(a.Name) != null)?.Name;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _cts?.Cancel();
+        _cts?.Dispose();
+        foreach (var client in _agentClients.Values)
+        {
+            if (client is IDisposable disposable) disposable.Dispose();
+        }
+    }
+
+    private async Task SendMessageAsync(string messageText)
+    {
+        if (string.IsNullOrWhiteSpace(messageText) || _selectedAgentClient == null || _selectedAgent == null || _isStreaming)
+            return;
+
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+
+        try
+        {
+            _isStreaming = true;
+            ClearError();
+
+            var userMsg = new ChatMessage(ChatRole.User, messageText);
+            _messages.Add(userMsg);
+            StateHasChanged();
+
+            var agentRole = GetAgentRole(_selectedAgent);
+            var agentMsg = new ChatMessage(agentRole, string.Empty);
+            _messages.Add(agentMsg);
+            StateHasChanged();
+
+            var contentBuilder = new StringBuilder();
+            await foreach (var update in _selectedAgentClient.CompleteStreamingAsync(_messages, cancellationToken: _cts.Token))
+            {
+                if (update.Text != null)
+                {
+                    contentBuilder.Append(update.Text);
+                    _messages[^1] = new ChatMessage(agentRole, contentBuilder.ToString());
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            _isStreaming = false;
+            StateHasChanged();
+        }
+    }
+
+    private static ChatRole GetAgentRole(string agentName) => agentName switch
+    {
+        "assistant" => new ChatRole("Assistant"),
+        "coder" => new ChatRole("Coder"),
+        "researcher" => new ChatRole("Researcher"),
+        _ => ChatRole.Assistant
+    };
+
+    private Task HandleStopAsync() { _cts?.Cancel(); return Task.CompletedTask; }
+
+    private async Task HandleRegenerateAsync(int messageIndex)
+    {
+        if (_isStreaming || messageIndex <= 0 || messageIndex >= _messages.Count) return;
+
+        int userMessageIndex = messageIndex - 1;
+        while (userMessageIndex >= 0 && _messages[userMessageIndex].Role == ChatRole.User) userMessageIndex--;
+        userMessageIndex++;
+
+        if (userMessageIndex < 0 || _messages[userMessageIndex].Role != ChatRole.User) return;
+
+        var userMessage = _messages[userMessageIndex].Text ?? string.Empty;
+        while (_messages.Count > messageIndex) _messages.RemoveAt(_messages.Count - 1);
+        _messages.RemoveAt(userMessageIndex);
+        StateHasChanged();
+        await SendMessageAsync(userMessage);
+    }
+
+    private void ClearError() => _errorMessage = null;
+
+    private string GetInputPlaceholder()
+    {
+        if (_selectedAgentClient == null) return "No agent available...";
+        if (_isStreaming) return "Agent is responding...";
+        var agentConfig = _agents.FirstOrDefault(a => a.Name == _selectedAgent);
+        return $"Ask {agentConfig?.DisplayName ?? "the agent"}...";
+    }
+}

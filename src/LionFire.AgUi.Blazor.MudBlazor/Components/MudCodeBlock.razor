@@ -1,0 +1,26 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div class="mud-code-block @Class" @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrEmpty(Language) || ShowCopyButton)
+    {
+        <div class="mud-code-block-header">
+            @if (!string.IsNullOrEmpty(Language))
+            {
+                <span class="mud-code-block-language">@GetDisplayLanguage(Language)</span>
+            }
+            <div class="mud-code-block-spacer"></div>
+            @if (ShowCopyButton)
+            {
+                <MudIconButton Icon="@CopyIcon"
+                               Size="@SmallSize"
+                               Color="@DefaultColor"
+                               OnClick="HandleCopyClick"
+                               aria-label="Copy to clipboard"
+                               Class="mud-code-block-copy-button" />
+            }
+        </div>
+    }
+    <pre class="@PreClass"><code class="@CodeClass" @ref="_codeElement">@Code</code></pre>
+</div>

@@ -1,0 +1,117 @@
+@page "/"
+
+<PageTitle>Home - AG-UI WASM Full Demo</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" GutterBottom="true">AG-UI Blazor WebAssembly Full Demo</MudText>
+    <MudText Typo="Typo.body1" Class="mb-6">
+        A comprehensive demonstration of AG-UI Blazor components running in WebAssembly with offline support.
+    </MudText>
+
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudIcon Icon="@Icons.Material.Filled.Chat" Color="Color.Primary" />
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Chat Demo</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">
+                        Basic AI chat interface with streaming responses and message operations.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/chat">Open</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudIcon Icon="@Icons.Material.Filled.Group" Color="Color.Secondary" />
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Multi-Agent</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">
+                        Switch between multiple AI agents with different personalities.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/multiagent">Open</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudIcon Icon="@Icons.Material.Filled.CloudOff" Color="Color.Warning" />
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Offline Mode</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">
+                        Test offline capabilities with message queueing and automatic reconnection.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/offline">Open</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudIcon Icon="@Icons.Material.Filled.NetworkCheck" Color="Color.Info" />
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Network Status</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">
+                        Monitor connection state, reconnection attempts, and queued messages.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/network">Open</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <MudPaper Elevation="1" Class="pa-4 mt-6">
+        <MudText Typo="Typo.h6" GutterBottom="true">WASM Features</MudText>
+        <MudList T="string" Dense="true">
+            <MudListItem Icon="@Icons.Material.Filled.Check" IconColor="Color.Success">
+                Client-side WebAssembly execution
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Check" IconColor="Color.Success">
+                Offline message queueing
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Check" IconColor="Color.Success">
+                Automatic reconnection
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Check" IconColor="Color.Success">
+                PWA support (installable)
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Check" IconColor="Color.Success">
+                Service worker for offline assets
+            </MudListItem>
+        </MudList>
+    </MudPaper>
+</MudContainer>

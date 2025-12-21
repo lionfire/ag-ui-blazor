@@ -1,0 +1,113 @@
+html, body {
+    font-family: 'Roboto', sans-serif;
+}
+
+h1:focus {
+    outline: none;
+}
+
+a, .btn-link {
+    color: #0071bc;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.loading-progress {
+    position: relative;
+    display: block;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke-width: 10;
+}
+
+.loading-progress circle.bg {
+    stroke: #e0e0e0;
+}
+
+.loading-progress circle.progress {
+    stroke: #1b6ec2;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    animation: loading-progress 1.5s ease-out infinite;
+}
+
+@keyframes loading-progress {
+    0% {
+        stroke-dashoffset: 283;
+    }
+    50% {
+        stroke-dashoffset: 70;
+    }
+    100% {
+        stroke-dashoffset: 283;
+    }
+}
+
+/* PWA install prompt */
+.pwa-install-prompt {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
+/* Offline indicator */
+.offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #ff9800;
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    z-index: 1001;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 600px) {
+    .mud-drawer-content {
+        padding-top: 0 !important;
+    }
+}

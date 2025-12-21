@@ -1,0 +1,97 @@
+/* MudAgentChat Component Styles */
+
+/* Main container - absolute positioning to fill parent, flexbox layout */
+.mud-agent-chat {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+    overflow: hidden;
+}
+
+/* Error alert positioning */
+.mud-agent-chat-error {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+/* Connection status positioning */
+.mud-agent-chat-status {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+}
+
+/* Message list container - takes remaining space */
+.mud-agent-chat-messages {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Queue indicator - above input */
+.mud-agent-chat-queue {
+    flex: 0 0 auto;
+    padding: 4px 16px;
+    background-color: var(--mud-palette-background);
+    border-top: 1px solid var(--mud-palette-lines-default);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Input container - fixed at bottom */
+.mud-agent-chat-input {
+    flex: 0 0 auto;
+    padding: 8px 16px 0 16px;
+    background-color: var(--mud-palette-surface);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+    .mud-agent-chat-error {
+        top: 4px;
+        left: 4px;
+        right: 4px;
+    }
+
+    .mud-agent-chat-status {
+        top: 4px;
+        right: 4px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .mud-agent-chat-input {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+}
+
+/* Ensure proper scrollbar styling inheritance */
+.mud-agent-chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mud-agent-chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mud-agent-chat-messages::-webkit-scrollbar-thumb {
+    background-color: var(--mud-palette-lines-default);
+    border-radius: 4px;
+}
+
+.mud-agent-chat-messages::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mud-palette-text-disabled);
+}

@@ -1,0 +1,125 @@
+/* MudCodeBlock component styles */
+
+.mud-code-block {
+    position: relative;
+    margin-bottom: 1em;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-surface);
+}
+
+/* Header with language label and copy button */
+.mud-code-block-header {
+    display: flex;
+    align-items: center;
+    padding: 0.5em 1em;
+    background-color: var(--mud-palette-background-grey);
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    font-size: 0.75em;
+    min-height: 36px;
+}
+
+.mud-code-block-language {
+    color: var(--mud-palette-text-secondary);
+    font-weight: 500;
+    text-transform: none;
+    font-family: var(--mud-typography-default-family);
+}
+
+.mud-code-block-spacer {
+    flex: 1;
+}
+
+.mud-code-block-copy-button {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.mud-code-block-copy-button:hover {
+    opacity: 1;
+}
+
+/* Pre and code styling */
+.mud-code-block ::deep pre {
+    margin: 0;
+    padding: 1em;
+    overflow: auto;
+    font-size: 0.875em;
+    line-height: 1.5;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.mud-code-block ::deep pre code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+    tab-size: 4;
+}
+
+/* Line numbers support */
+.mud-code-block ::deep pre.line-numbers {
+    padding-left: 3.5em;
+    position: relative;
+}
+
+.mud-code-block ::deep pre.line-numbers code {
+    counter-reset: line;
+}
+
+.mud-code-block ::deep pre.line-numbers code > .line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 2em;
+    margin-left: -3em;
+    margin-right: 1em;
+    text-align: right;
+    color: var(--mud-palette-text-disabled);
+    user-select: none;
+}
+
+/* Hover state for the container */
+.mud-code-block:hover .mud-code-block-copy-button {
+    opacity: 1;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .mud-code-block {
+        background-color: var(--mud-palette-surface);
+    }
+
+    .mud-code-block-header {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* Selection styling within code blocks */
+.mud-code-block ::deep pre code::selection,
+.mud-code-block ::deep pre code *::selection {
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+}
+
+/* Scrollbar styling */
+.mud-code-block ::deep pre::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.mud-code-block ::deep pre::-webkit-scrollbar-track {
+    background: var(--mud-palette-background-grey);
+}
+
+.mud-code-block ::deep pre::-webkit-scrollbar-thumb {
+    background: var(--mud-palette-lines-default);
+    border-radius: 4px;
+}
+
+.mud-code-block ::deep pre::-webkit-scrollbar-thumb:hover {
+    background: var(--mud-palette-text-secondary);
+}

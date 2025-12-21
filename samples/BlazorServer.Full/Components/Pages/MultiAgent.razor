@@ -1,0 +1,55 @@
+@page "/multi-agent"
+@implements IDisposable
+
+<PageTitle>Multi-Agent Demo - AG-UI Blazor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Style="flex: 1; display: flex; flex-direction: column;">
+    <MudText Typo="Typo.h5" GutterBottom="true">Multi-Agent Group Chat</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Chat with multiple AI agents in the same conversation. Select which agent should respond, or let them take turns.
+    </MudText>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error"
+                  Class="mb-2"
+                  Variant="Variant.Outlined"
+                  ShowCloseIcon="true"
+                  CloseIconClicked="ClearError">
+            @_errorMessage
+        </MudAlert>
+    }
+
+    <div class="agent-selector pa-2 mb-2" style="border: 1px solid var(--mud-palette-lines-default); border-radius: 4px;">
+        <MudText Typo="Typo.caption" Class="mb-1">Select agent to respond:</MudText>
+        <MudChipSet T="string" @bind-SelectedValue="_selectedAgent" SelectionMode="SelectionMode.SingleSelection" Class="d-flex flex-wrap gap-1">
+            @foreach (var agent in _agents)
+            {
+                <MudChip T="string"
+                         Value="@agent.Name"
+                         Icon="@agent.Icon"
+                         Color="@(agent.Name == _selectedAgent ? agent.Color : Color.Default)"
+                         Variant="@(agent.Name == _selectedAgent ? Variant.Filled : Variant.Outlined)">
+                    @agent.DisplayName
+                </MudChip>
+            }
+        </MudChipSet>
+    </div>
+
+    <div style="flex: 1; min-height: 0; position: relative;">
+        <MudMessageList Messages="@_messages"
+                        IsStreaming="@_isStreaming"
+                        AutoScrollEnabled="true"
+                        SenderTitleDisplay="SenderTitleDisplayMode.Auto"
+                        OwnMessagesAlignment="OwnMessagesAlignment.Left"
+                        EmptyMessage="Start a group chat with multiple AI agents!"
+                        OnRegenerate="@HandleRegenerateAsync"
+                        OnStop="@HandleStopAsync" />
+    </div>
+
+    <div style="padding-top: 8px;">
+        <MudMessageInput OnSend="@SendMessageAsync"
+                         Disabled="@(_selectedAgentClient == null)"
+                         Placeholder="@GetInputPlaceholder()" />
+    </div>
+</MudContainer>

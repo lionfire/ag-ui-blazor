@@ -1,0 +1,62 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@TypoH6" Class="d-flex align-center gap-2">
+            <MudIcon Icon="@KeyboardIcon" />
+            Keyboard Shortcuts
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (ShortcutsByCategory != null)
+        {
+            <div class="keyboard-shortcuts-content">
+                @foreach (var category in ShortcutsByCategory.OrderBy(c => GetCategoryOrder(c.Key)))
+                {
+                    <MudText Typo="@TypoSubtitle1" Class="mt-4 mb-2 keyboard-category-title">
+                        @category.Key
+                    </MudText>
+                    <MudSimpleTable Dense="true" Hover="true" Class="keyboard-shortcuts-table">
+                        <tbody>
+                            @foreach (var shortcut in category.Value)
+                            {
+                                <tr>
+                                    <td class="shortcut-key-cell">
+                                        <MudChip T="string"
+                                                 Color="@DefaultColor"
+                                                 Size="@SmallSize"
+                                                 Variant="@OutlinedVariant"
+                                                 Class="keyboard-shortcut-chip">
+                                            @shortcut.GetDisplayString(IsMac)
+                                        </MudChip>
+                                    </td>
+                                    <td class="shortcut-description-cell">
+                                        @shortcut.Description
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+            </div>
+        }
+        else
+        {
+            <MudText Color="@SecondaryColor">No keyboard shortcuts available.</MudText>
+        }
+
+        <MudText Typo="@TypoCaption" Class="mt-4 platform-hint">
+            @if (IsMac)
+            {
+                <text>Tip: Use Cmd instead of Ctrl on Mac</text>
+            }
+            else
+            {
+                <text>Tip: Most shortcuts use Ctrl as the modifier key</text>
+            }
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="@PrimaryColor" Variant="@TextVariant">Close</MudButton>
+    </DialogActions>
+</MudDialog>

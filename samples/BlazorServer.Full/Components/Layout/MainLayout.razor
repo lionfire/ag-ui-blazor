@@ -1,0 +1,84 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider @ref="_themeProvider" @bind-IsDarkMode="_isDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h5" Class="ml-3">AG-UI Blazor Full Demo</MudText>
+        <MudSpacer />
+        <MudTooltip Text="Keyboard Shortcuts">
+            <MudIconButton Icon="@Icons.Material.Filled.Keyboard" Color="Color.Inherit" OnClick="ShowShortcuts" />
+        </MudTooltip>
+        <MudTooltip Text="@(_isDarkMode ? "Light Mode" : "Dark Mode")">
+            <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" Color="Color.Inherit" OnClick="ToggleDarkMode" />
+        </MudTooltip>
+        <MudTooltip Text="GitHub Repository">
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/lionfire/ag-ui-blazor" Target="_blank" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="/chat" Icon="@Icons.Material.Filled.Chat">Chat Demo</MudNavLink>
+            <MudNavLink Href="/multi-agent" Icon="@Icons.Material.Filled.Groups">Multi-Agent</MudNavLink>
+            <MudNavLink Href="/history" Icon="@Icons.Material.Filled.History">Conversation History</MudNavLink>
+            <MudNavLink Href="/developer" Icon="@Icons.Material.Filled.DeveloperMode">Developer Tools</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Style="padding-top: 80px; padding-left: 16px; padding-right: 16px; padding-bottom: 0;">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = true;
+    private MudThemeProvider? _themeProvider;
+
+    [Inject]
+    private IDialogService DialogService { get; set; } = default!;
+
+    [Inject]
+    private LionFire.AgUi.Blazor.Abstractions.IKeyboardShortcutService KeyboardShortcutService { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _themeProvider != null)
+        {
+            _isDarkMode = await _themeProvider.GetSystemPreference();
+            StateHasChanged();
+        }
+    }
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private async Task ShowShortcuts()
+    {
+        var parameters = new DialogParameters<MudKeyboardShortcutsHelp>
+        {
+            { x => x.ShortcutsByCategory, KeyboardShortcutService.ShortcutsByCategory },
+            { x => x.IsMac, KeyboardShortcutService.IsMac }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        await DialogService.ShowAsync<MudKeyboardShortcutsHelp>("Keyboard Shortcuts", parameters, options);
+    }
+}

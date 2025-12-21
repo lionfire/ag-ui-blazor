@@ -1,0 +1,72 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@using LionFire.AgUi.Blazor.Models
+@using LionFire.AgUi.Blazor.Services
+@using MudBlazor
+
+@if (TokenUsage != null)
+{
+    <div class="@GetContainerClass()">
+        @if (Variant == TokenSummaryVariant.Compact)
+        {
+            <MudTooltip Text="@GetTooltipText()">
+                <MudChip T="string" Size="ChipSizeSmall" Color="ColorDefault" Variant="ChipVariantText">
+                    <MudIcon Icon="@IconToken" Size="IconSizeSmall" Class="mr-1" />
+                    @FormatTokenCount(TokenUsage.TotalTokens)
+                    @if (ShowCost && TokenUsage.EstimatedCost.HasValue)
+                    {
+                        <span class="ml-1">(@FormatCost(TokenUsage.EstimatedCost))</span>
+                    }
+                </MudChip>
+            </MudTooltip>
+        }
+        else if (Variant == TokenSummaryVariant.Detailed)
+        {
+            <MudPaper Class="pa-2 token-summary-detailed" Elevation="0" Outlined="true">
+                <div class="d-flex align-center justify-space-between mb-1">
+                    <MudText Typo="TypoSubtitle2">Token Usage</MudText>
+                    @if (!string.IsNullOrEmpty(TokenUsage.ModelName))
+                    {
+                        <MudChip T="string" Size="ChipSizeSmall" Color="ColorInfo" Variant="ChipVariantOutlined">
+                            @TokenUsage.ModelName
+                        </MudChip>
+                    }
+                </div>
+                <div class="d-flex gap-4">
+                    <div>
+                        <MudText Typo="TypoCaption" Class="mud-text-secondary">Prompt</MudText>
+                        <MudText Typo="TypoBody2">@FormatTokenCount(TokenUsage.PromptTokens)</MudText>
+                    </div>
+                    <div>
+                        <MudText Typo="TypoCaption" Class="mud-text-secondary">Completion</MudText>
+                        <MudText Typo="TypoBody2">@FormatTokenCount(TokenUsage.CompletionTokens)</MudText>
+                    </div>
+                    <div>
+                        <MudText Typo="TypoCaption" Class="mud-text-secondary">Total</MudText>
+                        <MudText Typo="TypoBody2"><strong>@FormatTokenCount(TokenUsage.TotalTokens)</strong></MudText>
+                    </div>
+                    @if (ShowCost && TokenUsage.EstimatedCost.HasValue)
+                    {
+                        <div>
+                            <MudText Typo="TypoCaption" Class="mud-text-secondary">Est. Cost</MudText>
+                            <MudText Typo="TypoBody2" Color="ColorSuccess">@FormatCost(TokenUsage.EstimatedCost)</MudText>
+                        </div>
+                    }
+                </div>
+            </MudPaper>
+        }
+        else
+        {
+            <div class="d-flex align-center gap-2 token-summary-inline">
+                <MudIcon Icon="@IconToken" Size="IconSizeSmall" Class="mud-text-secondary" />
+                <MudText Typo="TypoCaption" Class="mud-text-secondary">
+                    @FormatTokenCount(TokenUsage.PromptTokens) / @FormatTokenCount(TokenUsage.CompletionTokens)
+                    (@FormatTokenCount(TokenUsage.TotalTokens) total)
+                    @if (ShowCost && TokenUsage.EstimatedCost.HasValue)
+                    {
+                        <span> - @FormatCost(TokenUsage.EstimatedCost)</span>
+                    }
+                </MudText>
+            </div>
+        }
+    </div>
+}

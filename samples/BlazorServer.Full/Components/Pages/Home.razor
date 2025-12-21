@@ -1,0 +1,164 @@
+@page "/"
+
+<PageTitle>AG-UI Blazor Full Demo</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h3" GutterBottom="true">AG-UI Blazor Full Demo</MudText>
+    <MudText Typo="Typo.body1" Class="mb-4">
+        Welcome to the comprehensive demo of AG-UI Blazor components. This sample showcases all available features.
+    </MudText>
+
+    <MudGrid>
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Primary">
+                            <MudIcon Icon="@Icons.Material.Filled.Chat" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Chat Demo</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Basic chat interface with streaming responses, message operations (edit, regenerate), and keyboard shortcuts.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/chat">Try It</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Secondary">
+                            <MudIcon Icon="@Icons.Material.Filled.Groups" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Multi-Agent</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Switch between multiple AI agents with different personalities and specializations.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/multi-agent">Try It</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Tertiary">
+                            <MudIcon Icon="@Icons.Material.Filled.History" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Conversation History</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Browse, search, export and manage conversation history with sidebar navigation.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/history">Try It</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Info">
+                            <MudIcon Icon="@Icons.Material.Filled.DeveloperMode" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Developer Tools</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Event log, state viewer, and other debugging tools for developers.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/developer">Try It</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Warning">
+                            <MudIcon Icon="@Icons.Material.Filled.Keyboard" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Keyboard Shortcuts</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Full keyboard navigation support. Press Ctrl+/ (or Cmd+/) to see all available shortcuts.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="ShowShortcuts">View Shortcuts</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="h-100">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Success">
+                            <MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Mobile Responsive</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Fully responsive design optimized for mobile, tablet, and desktop screens.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudText Typo="Typo.caption" Class="ml-2">Resize your browser to test!</MudText>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Inject]
+    private IDialogService DialogService { get; set; } = default!;
+
+    [Inject]
+    private LionFire.AgUi.Blazor.Abstractions.IKeyboardShortcutService KeyboardShortcutService { get; set; } = default!;
+
+    private async Task ShowShortcuts()
+    {
+        var parameters = new DialogParameters<MudKeyboardShortcutsHelp>
+        {
+            { x => x.ShortcutsByCategory, KeyboardShortcutService.ShortcutsByCategory },
+            { x => x.IsMac, KeyboardShortcutService.IsMac }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        await DialogService.ShowAsync<MudKeyboardShortcutsHelp>("Keyboard Shortcuts", parameters, options);
+    }
+}

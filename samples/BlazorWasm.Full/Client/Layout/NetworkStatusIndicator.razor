@@ -1,0 +1,37 @@
+@inject IOfflineMessageQueue OfflineQueue
+@implements IDisposable
+
+@if (_queuedCount > 0)
+{
+    <MudTooltip Text="@($"{_queuedCount} messages queued for sending")">
+        <MudBadge Content="@_queuedCount" Color="Color.Warning" Overlap="true">
+            <MudIcon Icon="@Icons.Material.Filled.Schedule"
+                     Color="Color.Warning"
+                     Size="Size.Small"
+                     Class="mr-2" />
+        </MudBadge>
+    </MudTooltip>
+}
+
+@code {
+    private int _queuedCount = 0;
+
+    protected override void OnInitialized()
+    {
+        OfflineQueue.MessageEnqueued += OnQueueChanged;
+        OfflineQueue.MessageDequeued += OnQueueChanged;
+        _queuedCount = OfflineQueue.Count;
+    }
+
+    private void OnQueueChanged(object? sender, QueuedMessage e)
+    {
+        _queuedCount = OfflineQueue.Count;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        OfflineQueue.MessageEnqueued -= OnQueueChanged;
+        OfflineQueue.MessageDequeued -= OnQueueChanged;
+    }
+}

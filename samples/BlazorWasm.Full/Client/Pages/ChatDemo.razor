@@ -1,0 +1,29 @@
+@page "/chat"
+@using Microsoft.Extensions.AI
+
+<PageTitle>Chat Demo - AG-UI WASM</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4" Style="height: calc(100vh - 150px);">
+    <MudText Typo="Typo.h5" GutterBottom="true">Chat Demo</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Basic chat interface with streaming responses. Messages are queued when offline.
+    </MudText>
+
+    <MudPaper Elevation="2" Style="height: calc(100% - 80px);">
+        <MudAgentChat AgentName="assistant"
+                      OnMessageSent="HandleMessageSent"
+                      OnMessageReceived="HandleMessageReceived" />
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void HandleMessageSent(ChatMessage message)
+    {
+        Console.WriteLine($"Message sent: {message.Text}");
+    }
+
+    private void HandleMessageReceived(ChatMessage message)
+    {
+        Console.WriteLine($"Message received: {message.Text}");
+    }
+}

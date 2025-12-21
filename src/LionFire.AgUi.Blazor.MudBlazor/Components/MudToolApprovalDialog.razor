@@ -1,0 +1,83 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@using LionFire.AgUi.Blazor.Models
+@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        <div class="d-flex align-center gap-2">
+            <MudIcon Icon="@GetRiskIcon(ToolCall.RiskLevel)"
+                     Color="@GetRiskColor(ToolCall.RiskLevel)" />
+            <MudText Typo="TypoH6">@ToolCall.Name</MudText>
+            <MudChip T="string" Size="SizeSmall" Color="@GetRiskColor(ToolCall.RiskLevel)">
+                @ToolCall.RiskLevel
+            </MudChip>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="tool-approval-dialog-content">
+            @if (!string.IsNullOrEmpty(ToolCall.Description))
+            {
+                <MudText Typo="TypoBody1" Class="mb-3">@ToolCall.Description</MudText>
+            }
+
+            <MudText Typo="TypoSubtitle2" Class="mb-2">Tool Details</MudText>
+            <MudSimpleTable Dense="true" Class="mb-3">
+                <tbody>
+                    <tr>
+                        <td><strong>Tool ID</strong></td>
+                        <td><code>@ToolCall.Id</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk Level</strong></td>
+                        <td>
+                            <MudChip T="string" Size="SizeSmall" Color="@GetRiskColor(ToolCall.RiskLevel)">
+                                @ToolCall.RiskLevel
+                            </MudChip>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Requested At</strong></td>
+                        <td>@ToolCall.RequestedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+
+            @if (ToolCall.Arguments?.Count > 0)
+            {
+                <MudText Typo="TypoSubtitle2" Class="mb-2">Arguments</MudText>
+                <MudPaper Class="pa-3 argument-panel" Elevation="0" Outlined="true">
+                    <pre class="argument-json">@FormatArguments(ToolCall.Arguments)</pre>
+                </MudPaper>
+            }
+            else
+            {
+                <MudText Typo="TypoBody2" Class="mud-text-secondary">No arguments provided</MudText>
+            }
+
+            @if (ToolCall.RiskLevel == ToolRiskLevel.Dangerous)
+            {
+                <MudAlert Severity="SeverityWarning" Class="mt-3">
+                    <MudText Typo="TypoBody2">
+                        <strong>Warning:</strong> This tool call is marked as dangerous and may have
+                        irreversible effects. Please review the arguments carefully before approving.
+                    </MudText>
+                </MudAlert>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="VariantText">Cancel</MudButton>
+        <MudButton OnClick="Deny"
+                   Color="ColorError"
+                   Variant="VariantOutlined"
+                   StartIcon="@IconClose">
+            Deny
+        </MudButton>
+        <MudButton OnClick="Approve"
+                   Color="ColorSuccess"
+                   Variant="VariantFilled"
+                   StartIcon="@IconCheck">
+            Approve
+        </MudButton>
+    </DialogActions>
+</MudDialog>

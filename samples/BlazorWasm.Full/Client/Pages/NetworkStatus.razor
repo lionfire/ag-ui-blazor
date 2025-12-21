@@ -1,0 +1,187 @@
+@page "/network"
+@inject IConnectionMonitor ConnectionMonitor
+@inject IOfflineMessageQueue OfflineQueue
+@implements IDisposable
+
+<PageTitle>Network Status - AG-UI WASM</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Network Status</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Real-time monitoring of connection state and message queue.
+    </MudText>
+
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" GutterBottom="true">Connection State</MudText>
+
+                <MudStack Spacing="2">
+                    <div class="d-flex align-center">
+                        <MudIcon Icon="@GetConnectionIcon()" Color="@GetConnectionColor()" Class="mr-2" />
+                        <MudText Typo="Typo.subtitle1">@_connectionState</MudText>
+                    </div>
+
+                    <MudDivider Class="my-2" />
+
+                    <MudText Typo="Typo.body2">
+                        <strong>Last State Change:</strong> @_lastStateChange.ToString("HH:mm:ss")
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        <strong>Failed Attempts:</strong> @ConnectionMonitor.FailedAttemptCount
+                    </MudText>
+
+                    @if (ConnectionMonitor.LastConnectedAt.HasValue)
+                    {
+                        <MudText Typo="Typo.body2">
+                            <strong>Last Connected:</strong> @ConnectionMonitor.LastConnectedAt.Value.ToString("HH:mm:ss")
+                        </MudText>
+                    }
+
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               Size="Size.Small"
+                               Class="mt-2"
+                               OnClick="CheckConnection">
+                        Check Connection
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" GutterBottom="true">Message Queue</MudText>
+
+                <MudStack Spacing="2">
+                    <div class="d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Queue" Color="@(_queuedCount > 0 ? Color.Warning : Color.Default)" Class="mr-2" />
+                        <MudText Typo="Typo.subtitle1">@_queuedCount Messages Queued</MudText>
+                    </div>
+
+                    <MudDivider Class="my-2" />
+
+                    <MudText Typo="Typo.body2">
+                        <strong>Storage:</strong> LocalStorage
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        <strong>Auto-Retry:</strong> Enabled
+                    </MudText>
+
+                    @if (_queuedCount > 0)
+                    {
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Warning"
+                                   Size="Size.Small"
+                                   OnClick="ClearQueue">
+                            Clear Queue
+                        </MudButton>
+                    }
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" GutterBottom="true">Connection History</MudText>
+
+                @if (_connectionHistory.Count > 0)
+                {
+                    <MudTimeline TimelineOrientation="TimelineOrientation.Horizontal" TimelinePosition="TimelinePosition.Top">
+                        @foreach (var entry in _connectionHistory.TakeLast(5))
+                        {
+                            <MudTimelineItem Color="@GetHistoryColor(entry.State)" Size="Size.Small">
+                                <ItemContent>
+                                    <MudText Typo="Typo.caption">@entry.State</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Default">@entry.Timestamp.ToString("HH:mm:ss")</MudText>
+                                </ItemContent>
+                            </MudTimelineItem>
+                        }
+                    </MudTimeline>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Default">No state changes recorded yet.</MudText>
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private ConnectionState _connectionState = ConnectionState.Disconnected;
+    private int _queuedCount = 0;
+    private DateTime _lastStateChange = DateTime.Now;
+    private List<(ConnectionState State, DateTime Timestamp)> _connectionHistory = new();
+
+    protected override void OnInitialized()
+    {
+        ConnectionMonitor.StateChanged += OnConnectionStateChanged;
+        OfflineQueue.MessageEnqueued += OnQueueChanged;
+        OfflineQueue.MessageDequeued += OnQueueChanged;
+        _connectionState = ConnectionMonitor.CurrentState;
+        _queuedCount = OfflineQueue.Count;
+        _connectionHistory.Add((_connectionState, DateTime.Now));
+    }
+
+    private void OnConnectionStateChanged(object? sender, ConnectionStateChangedEventArgs e)
+    {
+        _connectionState = e.NewState;
+        _lastStateChange = DateTime.Now;
+        _connectionHistory.Add((e.NewState, _lastStateChange));
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnQueueChanged(object? sender, QueuedMessage e)
+    {
+        _queuedCount = OfflineQueue.Count;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CheckConnection()
+    {
+        await ConnectionMonitor.CheckConnectionAsync();
+    }
+
+    private async Task ClearQueue()
+    {
+        await OfflineQueue.ClearAsync();
+    }
+
+    private string GetConnectionIcon() => _connectionState switch
+    {
+        ConnectionState.Connected => Icons.Material.Filled.Wifi,
+        ConnectionState.Connecting => Icons.Material.Filled.WifiFind,
+        ConnectionState.Reconnecting => Icons.Material.Filled.Sync,
+        ConnectionState.Disconnected => Icons.Material.Filled.WifiOff,
+        ConnectionState.Error => Icons.Material.Filled.Error,
+        _ => Icons.Material.Filled.Help
+    };
+
+    private Color GetConnectionColor() => _connectionState switch
+    {
+        ConnectionState.Connected => Color.Success,
+        ConnectionState.Connecting or ConnectionState.Reconnecting => Color.Warning,
+        ConnectionState.Disconnected => Color.Default,
+        ConnectionState.Error => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetHistoryColor(ConnectionState state) => state switch
+    {
+        ConnectionState.Connected => Color.Success,
+        ConnectionState.Connecting or ConnectionState.Reconnecting => Color.Warning,
+        ConnectionState.Disconnected => Color.Default,
+        ConnectionState.Error => Color.Error,
+        _ => Color.Default
+    };
+
+    public void Dispose()
+    {
+        ConnectionMonitor.StateChanged -= OnConnectionStateChanged;
+        OfflineQueue.MessageEnqueued -= OnQueueChanged;
+        OfflineQueue.MessageDequeued -= OnQueueChanged;
+    }
+}

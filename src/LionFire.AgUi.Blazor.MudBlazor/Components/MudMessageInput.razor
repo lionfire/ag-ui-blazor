@@ -1,0 +1,20 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@implements IAsyncDisposable
+
+<div @ref="_containerRef" class="mud-message-input">
+    <MudTextField @ref="_textField"
+                  @bind-Value="_message"
+                  Placeholder="@Placeholder"
+                  Lines="1"
+                  AutoGrow="true"
+                  MaxLines="5"
+                  Variant="@OutlinedVariant"
+                  Disabled="@Disabled"
+                  Immediate="true"
+                  Class="flex-grow-1" />
+    <MudIconButton Icon="@SendIcon"
+                   Color="@PrimaryColor"
+                   Disabled="@(Disabled || string.IsNullOrWhiteSpace(_message))"
+                   OnClick="SendMessage"
+                   aria-label="Send message" />
+</div>

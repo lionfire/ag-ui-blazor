@@ -1,0 +1,70 @@
+.keyboard-shortcuts-content {
+    min-width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.keyboard-category-title {
+    font-weight: 600;
+    color: var(--mud-palette-primary);
+}
+
+.keyboard-shortcuts-table {
+    margin-bottom: 8px;
+}
+
+.shortcut-key-cell {
+    width: 120px;
+    padding: 8px 12px;
+}
+
+.shortcut-description-cell {
+    padding: 8px 12px;
+}
+
+.keyboard-shortcut-chip {
+    font-family: monospace;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.platform-hint {
+    color: var(--mud-palette-text-secondary);
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .keyboard-shortcuts-content {
+        min-width: auto;
+        max-height: 300px;
+    }
+
+    .shortcut-key-cell {
+        width: 100px;
+        padding: 6px 8px;
+    }
+
+    .shortcut-description-cell {
+        padding: 6px 8px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Scrollbar styling */
+.keyboard-shortcuts-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.keyboard-shortcuts-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.keyboard-shortcuts-content::-webkit-scrollbar-thumb {
+    background-color: var(--mud-palette-lines-default);
+    border-radius: 3px;
+}
+
+.keyboard-shortcuts-content::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mud-palette-text-disabled);
+}

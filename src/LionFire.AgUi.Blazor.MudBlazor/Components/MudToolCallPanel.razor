@@ -1,0 +1,63 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@using LionFire.AgUi.Blazor.Models
+@using LionFire.AgUi.Blazor.Services
+
+<div class="mud-tool-call-panel @Class" @attributes="AdditionalAttributes">
+    @if (PendingToolCalls.Count == 0)
+    {
+        <MudText Typo="TypoBody2" Class="mud-text-secondary pa-2">No pending tool calls</MudText>
+    }
+    else
+    {
+        <MudList T="ToolCall" Dense="true">
+            @foreach (var toolCall in PendingToolCalls)
+            {
+                <MudListItem Class="@GetToolCallClass(toolCall)">
+                    <div class="d-flex align-center justify-space-between">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@GetRiskIcon(toolCall.RiskLevel)"
+                                     Color="@GetRiskColor(toolCall.RiskLevel)"
+                                     Size="SizeSmall" />
+                            <div>
+                                <MudText Typo="TypoSubtitle2">@toolCall.Name</MudText>
+                                @if (!string.IsNullOrEmpty(toolCall.Description))
+                                {
+                                    <MudText Typo="TypoCaption" Class="mud-text-secondary">@toolCall.Description</MudText>
+                                }
+                            </div>
+                        </div>
+                        <div class="d-flex gap-1">
+                            @if (ShowDetailsButton)
+                            {
+                                <MudTooltip Text="View Details">
+                                    <MudIconButton Icon="@IconInfo"
+                                                   Size="SizeSmall"
+                                                   OnClick="@(() => ShowDetailsDialog(toolCall))" />
+                                </MudTooltip>
+                            }
+                            <MudTooltip Text="Approve">
+                                <MudIconButton Icon="@IconCheck"
+                                               Color="ColorSuccess"
+                                               Size="SizeSmall"
+                                               OnClick="@(() => OnApprove(toolCall))" />
+                            </MudTooltip>
+                            <MudTooltip Text="Deny">
+                                <MudIconButton Icon="@IconClose"
+                                               Color="ColorError"
+                                               Size="SizeSmall"
+                                               OnClick="@(() => OnDeny(toolCall))" />
+                            </MudTooltip>
+                        </div>
+                    </div>
+                    @if (ShowArguments && toolCall.Arguments?.Count > 0)
+                    {
+                        <div class="tool-arguments mt-1">
+                            <MudText Typo="TypoCaption" Class="mud-text-secondary">Arguments:</MudText>
+                            <pre class="argument-json">@FormatArguments(toolCall.Arguments)</pre>
+                        </div>
+                    }
+                </MudListItem>
+            }
+        </MudList>
+    }
+</div>

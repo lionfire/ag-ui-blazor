@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <Description>Comprehensive AG-UI Blazor Server sample showcasing all features</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.AgUi.Blazor.MudBlazor\LionFire.AgUi.Blazor.MudBlazor.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.AgUi.Blazor.Server\LionFire.AgUi.Blazor.Server.csproj" />
+  </ItemGroup>
+
+</Project>

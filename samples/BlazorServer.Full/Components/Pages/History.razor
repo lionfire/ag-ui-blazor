@@ -1,0 +1,14 @@
+@page "/history"
+
+<PageTitle>Conversation History - AG-UI Blazor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4" Style="height: calc(100vh - 150px);">
+    <MudText Typo="Typo.h5" GutterBottom="true">Conversation History</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Browse and manage your conversation history with sidebar navigation.
+    </MudText>
+
+    <div style="height: calc(100% - 100px);">
+        <MudAgentChatWithHistory AgentName="assistant" />
+    </div>
+</MudContainer>

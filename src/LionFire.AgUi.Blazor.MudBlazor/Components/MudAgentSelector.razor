@@ -1,0 +1,44 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="mud-agent-selector @Class" @attributes="AdditionalAttributes">
+    <MudSelect T="string"
+               Value="@SelectedAgentName"
+               ValueChanged="HandleAgentChangedAsync"
+               Label="@Label"
+               Placeholder="@Placeholder"
+               Variant="@SelectVariant"
+               Margin="@DenseMargin"
+               Adornment="@StartAdornment"
+               AdornmentIcon="@IconAgent"
+               AdornmentColor="@PrimaryColor"
+               Disabled="@Disabled"
+               ReadOnly="@ReadOnly"
+               Class="agent-select">
+        @foreach (var agent in Agents)
+        {
+            <MudSelectItem T="string" Value="@agent.Name">
+                <div class="agent-option">
+                    @if (!string.IsNullOrEmpty(agent.IconUrl))
+                    {
+                        <MudImage Src="@agent.IconUrl" Width="24" Height="24" Class="agent-avatar rounded-circle" />
+                    }
+                    else
+                    {
+                        <MudAvatar Size="@SmallSize" Color="@PrimaryColor" Class="agent-avatar">
+                            @GetAgentInitials(agent.Name)
+                        </MudAvatar>
+                    }
+                    <div class="agent-info">
+                        <MudText Typo="@TypoBody2">@agent.Name</MudText>
+                        @if (!string.IsNullOrEmpty(agent.Description))
+                        {
+                            <MudText Typo="@TypoCaption" Color="@TertiaryColor">
+                                @agent.Description
+                            </MudText>
+                        }
+                    </div>
+                </div>
+            </MudSelectItem>
+        }
+    </MudSelect>
+</div>

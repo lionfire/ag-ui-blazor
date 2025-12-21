@@ -1,0 +1,45 @@
+.mud-message-input {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+    padding: 8px;
+    background-color: var(--mud-palette-gray-lighter);
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.mud-message-input :deep(.mud-input-root) {
+    flex-grow: 1;
+}
+
+.mud-message-input :deep(.mud-icon-button) {
+    margin-bottom: 4px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+    .mud-message-input {
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .mud-message-input :deep(.mud-input-root) {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .mud-message-input :deep(.mud-icon-button) {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* Safe area for devices with notches */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .mud-message-input {
+        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+}

@@ -1,0 +1,39 @@
+@page "/chat"
+
+<PageTitle>Chat Demo - AG-UI Blazor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Style="flex: 1; display: flex; flex-direction: column;">
+    <MudText Typo="Typo.h5" GutterBottom="true">Chat Demo</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Basic chat interface demonstrating streaming responses, message editing, and regeneration.
+        Try typing "features" or "keyboard" to see special responses.
+    </MudText>
+
+    <div style="flex: 1; min-height: 0; position: relative;">
+        <MudAgentChat AgentName="assistant"
+                      ShowConnectionStatus="true"
+                      OnNewChat="HandleNewChat"
+                      OnMessageSent="HandleMessageSent"
+                      OnMessageReceived="HandleMessageReceived" />
+    </div>
+</MudContainer>
+
+@code {
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = default!;
+
+    private void HandleNewChat()
+    {
+        Snackbar.Add("Started new chat!", Severity.Info);
+    }
+
+    private void HandleMessageSent(Microsoft.Extensions.AI.ChatMessage message)
+    {
+        // You could log messages or send analytics here
+    }
+
+    private void HandleMessageReceived(Microsoft.Extensions.AI.ChatMessage message)
+    {
+        // You could process responses here
+    }
+}

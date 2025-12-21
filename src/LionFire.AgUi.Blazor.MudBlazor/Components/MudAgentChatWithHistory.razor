@@ -1,0 +1,46 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="@GetLayoutClass()">
+    <div class="@GetDrawerClass()">
+        <MudConversationList Conversations="@Conversations"
+                             SelectedConversationId="@SelectedConversationId"
+                             OnConversationSelected="HandleConversationSelectedAsync"
+                             OnNewConversation="HandleNewConversationAsync"
+                             OnDelete="HandleDeleteConversationAsync"
+                             ShowDeleteButton="@ShowDeleteButton" />
+    </div>
+
+    @if (_drawerOpen)
+    {
+        <div class="drawer-overlay" @onclick="ToggleDrawer"></div>
+    }
+
+    <div class="mud-agent-chat-main">
+        @if (!string.IsNullOrEmpty(AgentName))
+        {
+            <div class="chat-toolbar">
+                <MudIconButton Icon="@IconMenu"
+                               Color="@InheritColor"
+                               Edge="@EdgeStart"
+                               OnClick="ToggleDrawer"
+                               Class="drawer-toggle" />
+                <MudText Typo="@H6Typo" Class="chat-title">@GetChatTitle()</MudText>
+            </div>
+
+            <MudAgentChat @ref="_chatComponent"
+                          AgentName="@AgentName"
+                          ShowConnectionStatus="@ShowConnectionStatus"
+                          OnMessageSent="HandleMessageSentAsync"
+                          OnMessageReceived="HandleMessageReceivedAsync"
+                          CssClass="chat-content" />
+        }
+        else
+        {
+            <div class="no-agent-selected">
+                <MudText Typo="@Body1Typo" Color="@TertiaryColor">
+                    Select a conversation or start a new one
+                </MudText>
+            </div>
+        }
+    </div>
+</div>

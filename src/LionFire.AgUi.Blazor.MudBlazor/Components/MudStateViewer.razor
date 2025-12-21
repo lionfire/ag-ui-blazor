@@ -1,0 +1,87 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="mud-state-viewer @Class" @attributes="AdditionalAttributes">
+    <MudPaper Class="state-viewer-container" Elevation="0" Outlined="true">
+        <div class="state-viewer-header">
+            <MudText Typo="@TypoSubtitle2" Class="flex-grow-1">@Title</MudText>
+            @if (ShowRefreshButton)
+            {
+                <MudIconButton Icon="@IconRefresh"
+                               Size="@SmallSize"
+                               Color="@TertiaryColor"
+                               OnClick="HandleRefreshAsync"
+                               title="Refresh" />
+            }
+            @if (ShowExpandAllButton && State.Count > 0)
+            {
+                <MudIconButton Icon="@(AllExpanded ? IconCollapseAll : IconExpandAll)"
+                               Size="@SmallSize"
+                               Color="@TertiaryColor"
+                               OnClick="ToggleExpandAll"
+                               title="@(AllExpanded ? "Collapse all" : "Expand all")" />
+            }
+        </div>
+
+        <div class="state-viewer-content">
+            @if (State.Count == 0)
+            {
+                <MudText Typo="@TypoBody2" Color="@TertiaryColor" Class="pa-2">
+                    @EmptyMessage
+                </MudText>
+            }
+            else
+            {
+                <MudSimpleTable Dense="true" Hover="true" Class="state-table">
+                    <tbody>
+                        @foreach (var item in State)
+                        {
+                            <tr>
+                                <td class="state-key">
+                                    <MudText Typo="@TypoBody2" Class="key-text">
+                                        @item.Key
+                                    </MudText>
+                                </td>
+                                <td class="state-value">
+                                    @if (IsExpandable(item.Value))
+                                    {
+                                        <div class="expandable-value">
+                                            <MudIconButton Icon="@(IsExpanded(item.Key) ? IconChevronUp : IconChevronDown)"
+                                                           Size="@SmallSize"
+                                                           Color="@TertiaryColor"
+                                                           OnClick="() => ToggleExpand(item.Key)" />
+                                            @if (IsExpanded(item.Key))
+                                            {
+                                                <pre class="value-code">@FormatValue(item.Value)</pre>
+                                            }
+                                            else
+                                            {
+                                                <MudText Typo="@TypoCaption" Color="@TertiaryColor">
+                                                    @GetValuePreview(item.Value)
+                                                </MudText>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="@TypoBody2" Class="value-text">
+                                            @FormatValue(item.Value)
+                                        </MudText>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudSimpleTable>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(LastUpdated))
+        {
+            <div class="state-viewer-footer">
+                <MudText Typo="@TypoCaption" Color="@TertiaryColor">
+                    Last updated: @LastUpdated
+                </MudText>
+            </div>
+        }
+    </MudPaper>
+</div>

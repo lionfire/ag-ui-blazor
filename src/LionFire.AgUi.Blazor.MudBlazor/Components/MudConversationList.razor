@@ -1,0 +1,58 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="mud-conversation-list @Class" @attributes="AdditionalAttributes">
+    <div class="conversation-list-header">
+        <MudText Typo="@H6Typo" Class="conversation-list-title">Conversations</MudText>
+        <MudTooltip Text="New conversation">
+            <MudIconButton Icon="@IconAdd"
+                           Size="@SmallSize"
+                           Color="@PrimaryColor"
+                           OnClick="HandleNewConversationAsync" />
+        </MudTooltip>
+    </div>
+
+    @if (Conversations is null || Conversations.Count == 0)
+    {
+        <div class="conversation-list-empty">
+            <MudText Typo="@Body2Typo" Color="@TertiaryColor">
+                @EmptyMessage
+            </MudText>
+        </div>
+    }
+    else
+    {
+        <MudList T="ConversationMetadata" Class="conversation-list-items">
+            @foreach (var conversation in Conversations)
+            {
+                <MudListItem T="ConversationMetadata"
+                             Value="@conversation"
+                             OnClick="() => HandleConversationSelectedAsync(conversation)"
+                             Class="@GetConversationItemClass(conversation)">
+                    <div class="conversation-item">
+                        <div class="conversation-item-header">
+                            <MudText Typo="@Subtitle2Typo" Class="conversation-item-title">
+                                @GetConversationTitle(conversation)
+                            </MudText>
+                            @if (ShowDeleteButton)
+                            {
+                                <MudIconButton Icon="@IconDelete"
+                                               Size="@ExtraSmallSize"
+                                               Color="@ErrorColor"
+                                               OnClick="@(() => HandleDeleteAsync(conversation))"
+                                               Class="conversation-delete-btn" />
+                            }
+                        </div>
+                        <div class="conversation-item-meta">
+                            <MudText Typo="@CaptionTypo" Color="@TertiaryColor">
+                                @FormatDate(conversation.LastModifiedAt)
+                            </MudText>
+                            <MudChip T="string" Size="@ExtraSmallSize" Variant="@ChipVariant">
+                                @conversation.MessageCount messages
+                            </MudChip>
+                        </div>
+                    </div>
+                </MudListItem>
+            }
+        </MudList>
+    }
+</div>

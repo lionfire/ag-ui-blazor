@@ -1,0 +1,110 @@
+.mud-agent-chat-with-history {
+    display: flex;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Drawer/sidebar styling */
+.conversation-drawer {
+    width: 280px;
+    min-width: 280px;
+    max-width: 80vw;
+    height: 100%;
+    background-color: var(--mud-palette-surface);
+    border-right: 1px solid var(--mud-palette-lines-default);
+    overflow-y: auto;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+/* Responsive drawer - slides in from left on mobile */
+@media (max-width: 960px) {
+    .conversation-drawer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: none;
+    }
+
+    .conversation-drawer.drawer-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Overlay for mobile drawer */
+.drawer-overlay {
+    display: none;
+}
+
+@media (max-width: 960px) {
+    .drawer-overlay {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 5;
+    }
+}
+
+/* Main content */
+.mud-agent-chat-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* Chat toolbar */
+.chat-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-surface);
+    flex-shrink: 0;
+}
+
+.chat-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Drawer toggle button - hidden on larger screens */
+.drawer-toggle {
+    display: none;
+}
+
+@media (max-width: 960px) {
+    .drawer-toggle {
+        display: flex;
+    }
+}
+
+/* Chat content fills remaining space */
+.chat-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+/* No agent selected state */
+.no-agent-selected {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 32px;
+    text-align: center;
+}

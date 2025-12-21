@@ -1,0 +1,25 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="mud-connection-status @GetStatusClass()" title="@GetStatusTitle()" @attributes="AdditionalAttributes">
+    <span class="status-dot @GetDotClass()"></span>
+    @if (ShowLabel)
+    {
+        <span class="status-label">@GetStatusLabel()</span>
+    }
+    @if (ShouldShowRetryButton())
+    {
+        <button class="retry-button @(_isRetrying ? "retrying" : "")"
+                @onclick="OnRetryClickAsync"
+                disabled="@_isRetrying"
+                title="@(_isRetrying ? "Retrying..." : "Retry connection")">
+            @if (_isRetrying)
+            {
+                <span class="retry-spinner"></span>
+            }
+            else
+            {
+                <span class="retry-icon">&#x21bb;</span>
+            }
+        </button>
+    }
+</div>

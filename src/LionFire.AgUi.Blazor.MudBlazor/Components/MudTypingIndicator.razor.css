@@ -1,0 +1,39 @@
+.mud-typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    background-color: var(--mud-palette-surface);
+    border-radius: 16px;
+}
+
+.mud-typing-indicator .dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--mud-palette-text-secondary);
+    border-radius: 50%;
+    animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.mud-typing-indicator .dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.mud-typing-indicator .dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.mud-typing-indicator .dot:nth-child(3) {
+    animation-delay: 0s;
+}
+
+@keyframes typing-bounce {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

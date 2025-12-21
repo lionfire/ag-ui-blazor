@@ -1,0 +1,282 @@
+.mud-message-list {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* Empty state */
+.message-list-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    padding: 32px;
+}
+
+/* Message container */
+.message-container {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    max-width: 85%;
+}
+
+/* User messages align right (default) */
+.message-container.user-message {
+    align-self: flex-end;
+    flex-direction: row;
+}
+
+/* User messages align left (when OwnMessagesAlignment is Left) */
+.message-container.user-message.user-message-left {
+    align-self: flex-start;
+    flex-direction: row;
+}
+
+/* Assistant messages align left */
+.message-container.assistant-message {
+    align-self: flex-start;
+    flex-direction: row;
+}
+
+/* Avatar styling */
+.message-avatar {
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.message-avatar.user-avatar {
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+}
+
+.message-avatar.assistant-avatar {
+    background-color: var(--mud-palette-secondary);
+    color: var(--mud-palette-secondary-text);
+}
+
+/* Message bubble */
+.message-bubble {
+    padding: 0;
+    border-radius: 10px !important;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.message-bubble.user-bubble {
+    background-color: var(--mud-palette-gray-lighter) !important;
+    color: var(--mud-palette-text-primary);
+}
+
+.message-bubble.assistant-bubble {
+    background-color: var(--mud-palette-background-gray) !important;
+    color: var(--mud-palette-text-primary);
+}
+
+/* Message header - only show when has content */
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.message-header:empty {
+    display: none;
+}
+
+.message-header:has(*) {
+    margin-bottom: 4px;
+}
+
+.message-role {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* User bubble text colors for header */
+.user-bubble .message-role,
+.user-bubble .message-time {
+    color: var(--mud-palette-text-secondary);
+}
+
+/* Assistant bubble text colors for header */
+.assistant-bubble .message-role,
+.assistant-bubble .message-time {
+    color: var(--mud-palette-text-secondary);
+}
+
+/* Message content */
+.message-content {
+    line-height: 1.5;
+    border-radius: 10px !important;
+    padding: 4px 12px;
+}
+
+/* Remove default paragraph margins inside message bubbles - override MudMarkdown scoped styles */
+.message-content p,
+.message-content ::deep p {
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.message-content p + p,
+.message-content ::deep p + p {
+    margin-top: 0.5em !important;
+}
+
+/* Ensure markdown content inherits proper text color */
+.user-bubble .message-content {
+    color: var(--mud-palette-text-primary);
+}
+
+.assistant-bubble .message-content {
+    color: var(--mud-palette-text-primary);
+}
+
+/* Code blocks styling */
+.message-content pre,
+.message-content code {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+/* Message bubble wrapper - contains bubble and actions */
+.message-bubble-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+/* Message actions - now outside the paper */
+.message-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Show actions on hover of the wrapper */
+.message-bubble-wrapper:hover .message-actions {
+    opacity: 1;
+}
+
+.message-actions button {
+    opacity: 0.7;
+}
+
+.message-actions button:hover {
+    opacity: 1;
+}
+
+/* Message edit UI */
+.message-edit {
+    margin-top: 8px;
+}
+
+.message-edit .mud-input {
+    width: 100%;
+}
+
+/* Streaming indicator */
+.streaming-indicator {
+    display: flex;
+    align-items: center;
+}
+
+.streaming-indicator .d-flex {
+    padding: 8px 16px;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+    .mud-message-list {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .message-container {
+        max-width: 95%;
+        gap: 8px;
+    }
+
+    .message-bubble {
+        padding: 0;
+        border-radius: 10px !important;
+    }
+
+    .message-content {
+        padding: 4px 10px;
+    }
+
+    .message-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .message-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.75rem !important;
+    }
+
+    .message-role {
+        font-size: 0.8rem;
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+    }
+}
+
+/* Touch device optimizations - show actions by default */
+@media (hover: none) and (pointer: coarse) {
+    .message-actions {
+        opacity: 1;
+    }
+
+    .message-actions button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 601px) and (max-width: 960px) {
+    .message-container {
+        max-width: 90%;
+    }
+}
+
+/* Scrollbar styling */
+.mud-message-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mud-message-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mud-message-list::-webkit-scrollbar-thumb {
+    background-color: var(--mud-palette-lines-default);
+    border-radius: 4px;
+}
+
+.mud-message-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mud-palette-text-disabled);
+}

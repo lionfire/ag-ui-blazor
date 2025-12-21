@@ -1,0 +1,60 @@
+@inject IConnectionMonitor ConnectionMonitor
+@implements IDisposable
+
+<MudTooltip Text="@GetStatusText()">
+    <MudIcon Icon="@GetStatusIcon()"
+             Color="@GetStatusColor()"
+             Size="Size.Small"
+             Class="mr-2" />
+</MudTooltip>
+
+@code {
+    private ConnectionState _connectionState = ConnectionState.Disconnected;
+
+    protected override void OnInitialized()
+    {
+        ConnectionMonitor.StateChanged += OnStateChanged;
+        _connectionState = ConnectionMonitor.CurrentState;
+    }
+
+    private void OnStateChanged(object? sender, ConnectionStateChangedEventArgs e)
+    {
+        _connectionState = e.NewState;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetStatusIcon() => _connectionState switch
+    {
+        ConnectionState.Connected => Icons.Material.Filled.Wifi,
+        ConnectionState.Connecting => Icons.Material.Filled.WifiFind,
+        ConnectionState.Reconnecting => Icons.Material.Filled.Sync,
+        ConnectionState.Disconnected => Icons.Material.Filled.WifiOff,
+        ConnectionState.Error => Icons.Material.Filled.Error,
+        _ => Icons.Material.Filled.Help
+    };
+
+    private Color GetStatusColor() => _connectionState switch
+    {
+        ConnectionState.Connected => Color.Success,
+        ConnectionState.Connecting => Color.Warning,
+        ConnectionState.Reconnecting => Color.Warning,
+        ConnectionState.Disconnected => Color.Default,
+        ConnectionState.Error => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetStatusText() => _connectionState switch
+    {
+        ConnectionState.Connected => "Connected to server",
+        ConnectionState.Connecting => "Connecting...",
+        ConnectionState.Reconnecting => "Reconnecting...",
+        ConnectionState.Disconnected => "Offline - messages will be queued",
+        ConnectionState.Error => "Connection error",
+        _ => "Unknown state"
+    };
+
+    public void Dispose()
+    {
+        ConnectionMonitor.StateChanged -= OnStateChanged;
+    }
+}

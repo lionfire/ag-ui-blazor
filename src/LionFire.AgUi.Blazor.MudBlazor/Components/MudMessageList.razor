@@ -1,0 +1,127 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+@implements IAsyncDisposable
+
+<div @ref="_scrollContainer" class="mud-message-list @Class" @attributes="AdditionalAttributes">
+    @if (Messages is null || Messages.Count == 0)
+    {
+        <div class="message-list-empty">
+            <MudText Typo="@Body2Typo" Color="@TertiaryColor">
+                @EmptyMessage
+            </MudText>
+        </div>
+    }
+    else
+    {
+        @for (int i = 0; i < Messages.Count; i++)
+        {
+            var message = Messages[i];
+            var index = i;
+            <div class="@GetMessageContainerClass(message)">
+                @if (!IsUserMessage(message) || OwnMessagesAlignment == OwnMessagesAlignment.Left)
+                {
+                    <MudAvatar Size="@SmallSize" Class="@GetAvatarClass(message)">
+                        <MudIcon Icon="@GetAvatarIcon(message)" Size="@SmallSize" />
+                    </MudAvatar>
+                }
+
+                <div class="message-bubble-wrapper">
+                    <MudPaper Class="@GetMessageBubbleClass(message)" Elevation="1" Style="@GetMessageBubbleStyle(message)">
+                        @{
+                            var showTitle = ShouldShowSenderTitle(message);
+                            var timestamp = FormatTimestamp(message);
+                            var hasHeader = showTitle || !string.IsNullOrEmpty(timestamp);
+                        }
+                        @if (hasHeader)
+                        {
+                            <div class="message-header">
+                                @if (showTitle)
+                                {
+                                    <span class="message-role">@GetRoleDisplayName(message)</span>
+                                }
+                                @if (!string.IsNullOrEmpty(timestamp))
+                                {
+                                    <span class="message-time">@timestamp</span>
+                                }
+                            </div>
+                        }
+                        @if (IsEditing(index))
+                        {
+                            <div class="message-edit">
+                                <MudTextField @bind-Value="_editingContent"
+                                              Lines="3"
+                                              Variant="@VariantOutlined"
+                                              Class="mb-2" />
+                                <div class="d-flex gap-2">
+                                    <MudButton Variant="@VariantFilled"
+                                               Color="@PrimaryColor"
+                                               Size="@SmallSize"
+                                               OnClick="SaveEditAsync">Save &amp; Resend</MudButton>
+                                    <MudButton Variant="@VariantText"
+                                               Size="@SmallSize"
+                                               OnClick="CancelEditing">Cancel</MudButton>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="message-content">
+                                <MudMarkdown Content="@GetMessageContent(message)" />
+                            </div>
+                        }
+                    </MudPaper>
+                    @if (ShowMessageActions && !IsEditing(index))
+                    {
+                        <div class="message-actions">
+                            @if (IsUserMessage(message))
+                            {
+                                <MudTooltip Text="Edit message">
+                                    <MudIconButton Icon="@IconEdit"
+                                                   Size="@SmallSize"
+                                                   OnClick="() => StartEditing(index)" />
+                                </MudTooltip>
+                            }
+                            @if (IsLastAssistantMessage(index) && !IsStreaming)
+                            {
+                                <MudTooltip Text="Regenerate response">
+                                    <MudIconButton Icon="@IconRefresh"
+                                                   Size="@SmallSize"
+                                                   OnClick="() => HandleRegenerateAsync(index)" />
+                                </MudTooltip>
+                            }
+                            <MudTooltip Text="Copy to clipboard">
+                                <MudIconButton Icon="@IconCopy"
+                                               Size="@SmallSize"
+                                               OnClick="() => CopyToClipboardAsync(index)" />
+                            </MudTooltip>
+                        </div>
+                    }
+                </div>
+
+                @if (IsUserMessage(message) && OwnMessagesAlignment == OwnMessagesAlignment.Right)
+                {
+                    <MudAvatar Size="@SmallSize" Class="message-avatar user-avatar">
+                        <MudIcon Icon="@UserAvatarIcon" Size="@SmallSize" />
+                    </MudAvatar>
+                }
+            </div>
+        }
+    }
+
+    @if (IsStreaming && IsLastMessageFromAssistant())
+    {
+        <div class="message-container assistant-message streaming-indicator">
+            <MudAvatar Size="@SmallSize" Class="message-avatar assistant-avatar">
+                <MudIcon Icon="@AssistantAvatarIcon" Size="@SmallSize" />
+            </MudAvatar>
+            <div class="d-flex align-center gap-2">
+                <MudTypingIndicator />
+                <MudTooltip Text="Stop generating">
+                    <MudIconButton Icon="@IconStop"
+                                   Size="@SmallSize"
+                                   Color="@ErrorColor"
+                                   OnClick="HandleStopAsync" />
+                </MudTooltip>
+            </div>
+        </div>
+    }
+</div>

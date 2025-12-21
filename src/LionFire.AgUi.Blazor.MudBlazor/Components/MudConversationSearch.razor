@@ -1,0 +1,33 @@
+@namespace LionFire.AgUi.Blazor.MudBlazor.Components
+
+<div class="mud-conversation-search @Class" @attributes="AdditionalAttributes">
+    <MudTextField @bind-Value="@_searchQuery"
+                  Placeholder="@Placeholder"
+                  Immediate="true"
+                  DebounceInterval="@DebounceMs"
+                  Adornment="@EndAdornment"
+                  AdornmentIcon="@IconSearch"
+                  AdornmentColor="@TertiaryColor"
+                  Variant="@TextFieldVariant"
+                  Margin="@DenseMargin"
+                  Class="search-input"
+                  OnDebounceIntervalElapsed="HandleSearchAsync"
+                  OnKeyDown="HandleKeyDownAsync" />
+
+    @if (ShowClearButton && !string.IsNullOrEmpty(_searchQuery))
+    {
+        <MudIconButton Icon="@IconClear"
+                       Size="@SmallSize"
+                       Color="@TertiaryColor"
+                       OnClick="ClearSearchAsync"
+                       Class="search-clear-btn" />
+    }
+
+    @if (IsSearching)
+    {
+        <MudProgressCircular Size="@SmallSize"
+                             Indeterminate="true"
+                             Color="@PrimaryColor"
+                             Class="search-progress" />
+    }
+</div>
