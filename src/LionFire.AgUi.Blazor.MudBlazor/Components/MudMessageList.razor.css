@@ -70,13 +70,13 @@
     overflow-wrap: break-word;
 }
 
+/* Background colors are set via inline styles in GetMessageBubbleStyle()
+   to properly support dark/light mode switching based on IsDarkMode parameter */
 .message-bubble.user-bubble {
-    background-color: var(--mud-palette-gray-lighter) !important;
     color: var(--mud-palette-text-primary);
 }
 
 .message-bubble.assistant-bubble {
-    background-color: var(--mud-palette-background-gray) !important;
     color: var(--mud-palette-text-primary);
 }
 
