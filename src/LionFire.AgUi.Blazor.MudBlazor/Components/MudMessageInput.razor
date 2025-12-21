@@ -1,7 +1,7 @@
 @namespace LionFire.AgUi.Blazor.MudBlazor.Components
 @implements IAsyncDisposable
 
-<div @ref="_containerRef" class="mud-message-input">
+<div @ref="_containerRef" class="mud-message-input" style="@GetContainerStyle()">
     <MudTextField @ref="_textField"
                   @bind-Value="_message"
                   Placeholder="@Placeholder"

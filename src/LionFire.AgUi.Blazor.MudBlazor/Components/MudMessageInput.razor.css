@@ -5,7 +5,7 @@
     gap: 8px;
     width: 100%;
     padding: 8px;
-    background-color: var(--mud-palette-gray-lighter);
+    /* Background color is set via inline style in GetContainerStyle() for dark/light mode support */
     border-radius: 10px 10px 0 0 !important;
 }
 

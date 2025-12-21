@@ -19,6 +19,32 @@ public partial class MudMessageInput : ComponentBase, IAsyncDisposable
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets whether dark mode is active. When set, adjusts input background color.
+    /// Can be set via CascadingParameter from a parent component or explicitly via parameter.
+    /// </summary>
+    [CascadingParameter(Name = "IsDarkMode")]
+    public bool? CascadedIsDarkMode { get; set; }
+
+    /// <summary>
+    /// Explicitly sets dark mode. Takes precedence over CascadingParameter.
+    /// </summary>
+    [Parameter]
+    public bool? IsDarkMode { get; set; }
+
+    private bool EffectiveIsDarkMode => IsDarkMode ?? CascadedIsDarkMode ?? false;
+
+    /// <summary>
+    /// Gets the inline style for the input container based on the theme.
+    /// </summary>
+    protected string GetContainerStyle()
+    {
+        var bgColor = EffectiveIsDarkMode
+            ? "var(--mud-palette-gray-darker)"
+            : "var(--mud-palette-gray-lighter)";
+        return $"background-color: {bgColor};";
+    }
+
     // MudBlazor constants for use in razor template
     protected static string SendIcon => Icons.Material.Filled.ArrowUpward;
     protected static Variant OutlinedVariant => Variant.Outlined;
