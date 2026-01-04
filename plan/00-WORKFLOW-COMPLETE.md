@@ -128,7 +128,7 @@ The PRP execution workflow has been successfully completed for the ag-ui-blazor 
 ### Epic Management Commands
 - `/ax:epic:greenlight <epic-ids>` - Mark epics ready for implementation
 - `/ax:epic:redlight <epic-ids>` - Pause work on epics
-- `/ax:epic:check` - Check and update epic status
+- `/ax:epic:validate` - Check and update epic status
 - `/ax:pm:status` - View project management status
 - `/ax:pm:implement` - Work on greenlit epics
 
