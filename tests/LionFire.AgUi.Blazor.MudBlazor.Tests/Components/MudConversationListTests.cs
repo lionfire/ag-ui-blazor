@@ -13,7 +13,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudConversationList component.
 /// </summary>
-public class MudConversationListTests : TestContext
+public class MudConversationListTests : BunitContext, IAsyncLifetime
 {
     public MudConversationListTests()
     {
@@ -21,7 +21,7 @@ public class MudConversationListTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
 
         // Render MudPopoverProvider to support MudTooltip components
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     private static List<ConversationMetadata> CreateTestConversations(int count = 3)
@@ -44,7 +44,7 @@ public class MudConversationListTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudConversationList>();
+        var cut = Render<MudConversationList>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -55,7 +55,7 @@ public class MudConversationListTests : TestContext
     public void Component_Shows_EmptyMessage_WhenNoConversations()
     {
         // Act
-        var cut = RenderComponent<MudConversationList>();
+        var cut = Render<MudConversationList>();
 
         // Assert
         cut.Find(".conversation-list-empty").Should().NotBeNull();
@@ -69,7 +69,7 @@ public class MudConversationListTests : TestContext
         var customMessage = "Start chatting!";
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.EmptyMessage, customMessage));
 
         // Assert
@@ -83,7 +83,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations();
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations));
 
         // Assert
@@ -98,7 +98,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations(1);
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations));
 
         // Assert
@@ -112,7 +112,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations(1);
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations));
 
         // Assert
@@ -137,7 +137,7 @@ public class MudConversationListTests : TestContext
             Tags: new List<string>());
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, new List<ConversationMetadata> { conversation }));
 
         // Assert
@@ -155,7 +155,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations();
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations)
             .Add(p => p.SelectedConversationId, "conv-2"));
 
@@ -170,7 +170,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations();
         ConversationMetadata? selectedConversation = null;
 
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations)
             .Add(p => p.OnConversationSelected, (ConversationMetadata c) => selectedConversation = c));
 
@@ -191,7 +191,7 @@ public class MudConversationListTests : TestContext
     public void Component_Has_NewConversationButton()
     {
         // Act
-        var cut = RenderComponent<MudConversationList>();
+        var cut = Render<MudConversationList>();
 
         // Assert
         var buttons = cut.FindComponents<MudIconButton>();
@@ -204,7 +204,7 @@ public class MudConversationListTests : TestContext
         // Arrange
         var newConversationClicked = false;
 
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.OnNewConversation, () => newConversationClicked = true));
 
         // Act
@@ -226,7 +226,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations(1);
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations));
 
         // Assert
@@ -240,7 +240,7 @@ public class MudConversationListTests : TestContext
         var conversations = CreateTestConversations(1);
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, conversations)
             .Add(p => p.ShowDeleteButton, false));
 
@@ -266,7 +266,7 @@ public class MudConversationListTests : TestContext
             Tags: new List<string>());
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, new List<ConversationMetadata> { conversation }));
 
         // Assert
@@ -287,7 +287,7 @@ public class MudConversationListTests : TestContext
             Tags: new List<string>());
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Conversations, new List<ConversationMetadata> { conversation }));
 
         // Assert
@@ -305,7 +305,7 @@ public class MudConversationListTests : TestContext
         var customClass = "my-custom-class";
 
         // Act
-        var cut = RenderComponent<MudConversationList>(parameters => parameters
+        var cut = Render<MudConversationList>(parameters => parameters
             .Add(p => p.Class, customClass));
 
         // Assert
@@ -313,4 +313,7 @@ public class MudConversationListTests : TestContext
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

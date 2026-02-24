@@ -7,13 +7,13 @@ using MudBlazor.Services;
 
 namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 
-public class MudAgentSelectorTests : TestContext
+public class MudAgentSelectorTests : BunitContext, IAsyncLifetime
 {
     public MudAgentSelectorTests()
     {
         Services.AddMudServices();
         JSInterop.Mode = JSRuntimeMode.Loose;
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     #region Rendering Tests
@@ -22,7 +22,7 @@ public class MudAgentSelectorTests : TestContext
     public void Renders_WithDefaultParameters()
     {
         // Act
-        var cut = RenderComponent<MudAgentSelector>();
+        var cut = Render<MudAgentSelector>();
 
         // Assert
         cut.Markup.Should().Contain("mud-agent-selector");
@@ -32,7 +32,7 @@ public class MudAgentSelectorTests : TestContext
     public void Renders_WithCustomLabel()
     {
         // Act
-        var cut = RenderComponent<MudAgentSelector>(parameters => parameters
+        var cut = Render<MudAgentSelector>(parameters => parameters
             .Add(p => p.Label, "Choose Agent"));
 
         // Assert
@@ -50,7 +50,7 @@ public class MudAgentSelectorTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudAgentSelector>(parameters => parameters
+        var cut = Render<MudAgentSelector>(parameters => parameters
             .Add(p => p.Agents, agents));
 
         // Assert - verify the agents are stored (dropdown options are rendered lazily)
@@ -67,7 +67,7 @@ public class MudAgentSelectorTests : TestContext
     public void Label_DefaultsToSelectAgent()
     {
         // Act
-        var cut = RenderComponent<MudAgentSelector>();
+        var cut = Render<MudAgentSelector>();
 
         // Assert
         cut.Instance.Label.Should().Be("Select Agent");
@@ -77,7 +77,7 @@ public class MudAgentSelectorTests : TestContext
     public void Disabled_DefaultsToFalse()
     {
         // Act
-        var cut = RenderComponent<MudAgentSelector>();
+        var cut = Render<MudAgentSelector>();
 
         // Assert
         cut.Instance.Disabled.Should().BeFalse();
@@ -87,7 +87,7 @@ public class MudAgentSelectorTests : TestContext
     public void ReadOnly_DefaultsToFalse()
     {
         // Act
-        var cut = RenderComponent<MudAgentSelector>();
+        var cut = Render<MudAgentSelector>();
 
         // Assert
         cut.Instance.ReadOnly.Should().BeFalse();
@@ -97,7 +97,7 @@ public class MudAgentSelectorTests : TestContext
     public void Agents_DefaultsToEmpty()
     {
         // Act
-        var cut = RenderComponent<MudAgentSelector>();
+        var cut = Render<MudAgentSelector>();
 
         // Assert
         cut.Instance.Agents.Should().BeEmpty();
@@ -132,4 +132,7 @@ public class MudAgentSelectorTests : TestContext
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

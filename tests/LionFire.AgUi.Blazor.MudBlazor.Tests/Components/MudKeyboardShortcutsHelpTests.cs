@@ -7,13 +7,13 @@ using Xunit;
 
 namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 
-public class MudKeyboardShortcutsHelpTests : TestContext
+public class MudKeyboardShortcutsHelpTests : BunitContext, IAsyncLifetime
 {
     public MudKeyboardShortcutsHelpTests()
     {
         Services.AddMudServices();
         JSInterop.Mode = JSRuntimeMode.Loose;
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
         var shortcuts = CreateTestShortcuts();
 
         // Act
-        var cut = RenderComponent<MudKeyboardShortcutsHelp>(parameters =>
+        var cut = Render<MudKeyboardShortcutsHelp>(parameters =>
             parameters.Add(p => p.ShortcutsByCategory, shortcuts));
 
         // Assert
@@ -38,7 +38,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
         var shortcuts = CreateTestShortcuts();
 
         // Act
-        var cut = RenderComponent<MudKeyboardShortcutsHelp>(parameters =>
+        var cut = Render<MudKeyboardShortcutsHelp>(parameters =>
             parameters.Add(p => p.ShortcutsByCategory, shortcuts));
 
         // Assert
@@ -52,7 +52,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
         var shortcuts = CreateTestShortcuts();
 
         // Act
-        var cut = RenderComponent<MudKeyboardShortcutsHelp>(parameters => parameters
+        var cut = Render<MudKeyboardShortcutsHelp>(parameters => parameters
             .Add(p => p.ShortcutsByCategory, shortcuts)
             .Add(p => p.IsMac, true));
 
@@ -67,7 +67,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
         var shortcuts = CreateTestShortcuts();
 
         // Act
-        var cut = RenderComponent<MudKeyboardShortcutsHelp>(parameters =>
+        var cut = Render<MudKeyboardShortcutsHelp>(parameters =>
             parameters.Add(p => p.ShortcutsByCategory, shortcuts));
 
         // Assert - MudDialog should be in the tree
@@ -79,7 +79,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
     public void Component_Renders_WithNullShortcuts()
     {
         // Act - Should not throw
-        var cut = RenderComponent<MudKeyboardShortcutsHelp>(parameters =>
+        var cut = Render<MudKeyboardShortcutsHelp>(parameters =>
             parameters.Add(p => p.ShortcutsByCategory, null));
 
         // Assert
@@ -118,7 +118,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
         var shortcuts = CreateTestShortcuts();
 
         // Act
-        var cut = RenderComponent<MudKeyboardShortcutsHelp>(parameters =>
+        var cut = Render<MudKeyboardShortcutsHelp>(parameters =>
             parameters.Add(p => p.ShortcutsByCategory, shortcuts));
 
         // Assert - Verify the shortcuts are accessible
@@ -147,4 +147,7 @@ public class MudKeyboardShortcutsHelpTests : TestContext
             }.AsReadOnly()
         };
     }
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

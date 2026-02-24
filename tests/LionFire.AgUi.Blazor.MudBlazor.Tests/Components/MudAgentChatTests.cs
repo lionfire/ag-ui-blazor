@@ -17,7 +17,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudAgentChat component.
 /// </summary>
-public partial class MudAgentChatTests : TestContext
+public partial class MudAgentChatTests : BunitContext, IAsyncLifetime
 {
     private readonly Mock<IAgentClientFactory> _mockAgentFactory;
     private readonly Mock<IChatClient> _mockChatClient;
@@ -74,7 +74,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -89,7 +89,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -105,7 +105,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -120,7 +120,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -135,7 +135,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -150,7 +150,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent")
             .Add(p => p.ShowConnectionStatus, false));
 
@@ -170,7 +170,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert - Wait for async initialization
@@ -185,7 +185,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(null, ConnectionState.Error);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "nonexistent-agent"));
 
         // Assert
@@ -200,7 +200,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act & Assert
-        var action = () => RenderComponent<MudAgentChat>(parameters => parameters
+        var action = () => Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, string.Empty));
 
         action.Should().Throw<ArgumentException>()
@@ -214,7 +214,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act & Assert
-        var action = () => RenderComponent<MudAgentChat>(parameters => parameters
+        var action = () => Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "   "));
 
         action.Should().Throw<ArgumentException>()
@@ -233,7 +233,7 @@ public partial class MudAgentChatTests : TestContext
         var customClass = "my-custom-chat";
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent")
             .Add(p => p.CssClass, customClass));
 
@@ -249,7 +249,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -269,7 +269,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -283,7 +283,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -297,7 +297,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(_mockChatClient.Object, ConnectionState.Connected);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -321,7 +321,7 @@ public partial class MudAgentChatTests : TestContext
             .Returns(ConnectionState.Error);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -338,7 +338,7 @@ public partial class MudAgentChatTests : TestContext
         // Arrange
         SetupAgentFactory(null, ConnectionState.Error);
 
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Verify error exists
@@ -360,7 +360,7 @@ public partial class MudAgentChatTests : TestContext
     {
         // Arrange
         SetupAgentFactory(_mockChatClient.Object);
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Act
@@ -375,7 +375,7 @@ public partial class MudAgentChatTests : TestContext
     {
         // Arrange
         SetupAgentFactory(_mockChatClient.Object);
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Act
@@ -390,7 +390,7 @@ public partial class MudAgentChatTests : TestContext
     {
         // Arrange
         SetupAgentFactory(null, ConnectionState.Error);
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Clear the initialization error first
@@ -412,7 +412,7 @@ public partial class MudAgentChatTests : TestContext
     {
         // Arrange
         SetupAgentFactory(_mockChatClient.Object);
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Act
@@ -443,7 +443,7 @@ public partial class MudAgentChatTests : TestContext
             .Setup(c => c.CompleteStreamingAsync(It.IsAny<IList<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
             .Returns(streamingResponses.ToAsyncEnumerable());
 
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent")
             .Add(p => p.OnMessageSent, (ChatMessage msg) => sentMessage = msg));
 
@@ -472,7 +472,7 @@ public partial class MudAgentChatTests : TestContext
             .Setup(c => c.CompleteStreamingAsync(It.IsAny<IList<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
             .Returns(streamingResponses.ToAsyncEnumerable());
 
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent")
             .Add(p => p.OnMessageReceived, (ChatMessage msg) => receivedMessage = msg));
 
@@ -495,7 +495,7 @@ public partial class MudAgentChatTests : TestContext
         SetupAgentFactory(null, ConnectionState.Error);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -516,7 +516,7 @@ public partial class MudAgentChatTests : TestContext
             .Returns(ConnectionState.Error);
 
         // Act
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Assert
@@ -534,7 +534,7 @@ public partial class MudAgentChatTests : TestContext
         // Arrange
         SetupAgentFactory(_mockChatClient.Object);
 
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Act & Assert - Should not throw
@@ -550,7 +550,7 @@ public partial class MudAgentChatTests : TestContext
     {
         // Arrange
         SetupAgentFactory(_mockChatClient.Object);
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Act & Assert - Should not throw
@@ -571,7 +571,7 @@ public partial class MudAgentChatTests : TestContext
             .Setup(c => c.CompleteStreamingAsync(It.IsAny<IList<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
             .Returns(streamingResponses);
 
-        var cut = RenderComponent<MudAgentChat>(parameters => parameters
+        var cut = Render<MudAgentChat>(parameters => parameters
             .Add(p => p.AgentName, "test-agent"));
 
         // Start streaming (don't await)
@@ -592,6 +592,9 @@ public partial class MudAgentChatTests : TestContext
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }
 
 /// <summary>

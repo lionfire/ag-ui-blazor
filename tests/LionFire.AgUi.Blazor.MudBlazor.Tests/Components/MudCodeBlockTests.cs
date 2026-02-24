@@ -12,7 +12,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudCodeBlock component.
 /// </summary>
-public class MudCodeBlockTests : TestContext
+public class MudCodeBlockTests : BunitContext, IAsyncLifetime
 {
     public MudCodeBlockTests()
     {
@@ -27,7 +27,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>();
+        var cut = Render<MudCodeBlock>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -41,7 +41,7 @@ public class MudCodeBlockTests : TestContext
         var code = "var x = 1;";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code));
 
         // Assert
@@ -55,7 +55,7 @@ public class MudCodeBlockTests : TestContext
         var code = "const y = 2;";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code));
 
         // Assert
@@ -71,7 +71,7 @@ public class MudCodeBlockTests : TestContext
         var language = "csharp";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code)
             .Add(p => p.Language, language));
 
@@ -87,7 +87,7 @@ public class MudCodeBlockTests : TestContext
         var code = "var x = 1;";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code)
             .Add(p => p.ShowCopyButton, false)
             .Add(p => p.Language, null));
@@ -103,7 +103,7 @@ public class MudCodeBlockTests : TestContext
         var code = "var x = 1;";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code));
 
         // Assert
@@ -118,7 +118,7 @@ public class MudCodeBlockTests : TestContext
         var code = "var x = 1;";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code)
             .Add(p => p.ShowCopyButton, false)
             .Add(p => p.Language, "csharp")); // Keep language to have header
@@ -135,7 +135,7 @@ public class MudCodeBlockTests : TestContext
         var language = "csharp";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code)
             .Add(p => p.Language, language));
 
@@ -151,7 +151,7 @@ public class MudCodeBlockTests : TestContext
         var customClass = "my-custom-class";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Class, customClass));
 
         // Assert
@@ -168,7 +168,7 @@ public class MudCodeBlockTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.AdditionalAttributes, attributes));
 
         // Assert
@@ -179,7 +179,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_EnableHighlighting_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>();
+        var cut = Render<MudCodeBlock>();
 
         // Assert
         cut.Instance.EnableHighlighting.Should().BeTrue();
@@ -189,7 +189,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_ShowLineNumbers_DefaultsToFalse()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>();
+        var cut = Render<MudCodeBlock>();
 
         // Assert
         cut.Instance.ShowLineNumbers.Should().BeFalse();
@@ -202,7 +202,7 @@ public class MudCodeBlockTests : TestContext
         var code = "var x = 1;";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code)
             .Add(p => p.ShowLineNumbers, true));
 
@@ -238,7 +238,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_DisplaysCorrectLanguageName(string language, string expectedDisplay)
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, "code")
             .Add(p => p.Language, language));
 
@@ -250,11 +250,11 @@ public class MudCodeBlockTests : TestContext
     public void Component_ReRendersOnCodeChange()
     {
         // Arrange
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, "initial code"));
 
         // Act
-        cut.SetParametersAndRender(parameters => parameters
+        cut.Render(parameters => parameters
             .Add(p => p.Code, "updated code"));
 
         // Assert
@@ -266,7 +266,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_OnCopied_EventCanBeSet()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, "test code")
             .Add(p => p.OnCopied, EventCallback.Factory.Create<string>(this, _ => { })));
 
@@ -279,7 +279,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_OnCopyFailed_EventCanBeSet()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, "test code")
             .Add(p => p.OnCopyFailed, EventCallback.Factory.Create<string>(this, _ => { })));
 
@@ -292,7 +292,7 @@ public class MudCodeBlockTests : TestContext
     public async Task Component_DisposeAsync_CompletesSuccessfully()
     {
         // Arrange
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, "test code"));
 
         // Act & Assert - Should not throw
@@ -309,7 +309,7 @@ public class MudCodeBlockTests : TestContext
         var code = "if (true)\n{\n    Console.WriteLine();\n}";
 
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, code));
 
         // Assert
@@ -321,7 +321,7 @@ public class MudCodeBlockTests : TestContext
     public void Component_HandlesEmptyCode()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, string.Empty));
 
         // Assert
@@ -333,11 +333,14 @@ public class MudCodeBlockTests : TestContext
     public void Component_HandlesNullCode()
     {
         // Act
-        var cut = RenderComponent<MudCodeBlock>(parameters => parameters
+        var cut = Render<MudCodeBlock>(parameters => parameters
             .Add(p => p.Code, null));
 
         // Assert
         cut.Should().NotBeNull();
         cut.Find(".mud-code-block").Should().NotBeNull();
     }
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

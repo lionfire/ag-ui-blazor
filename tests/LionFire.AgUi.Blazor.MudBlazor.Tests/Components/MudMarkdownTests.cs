@@ -14,7 +14,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudMarkdown component.
 /// </summary>
-public class MudMarkdownTests : TestContext
+public class MudMarkdownTests : BunitContext, IAsyncLifetime
 {
     public MudMarkdownTests()
     {
@@ -30,7 +30,7 @@ public class MudMarkdownTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudMarkdown>();
+        var cut = Render<MudMarkdown>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -41,7 +41,7 @@ public class MudMarkdownTests : TestContext
     public void Component_Renders_WithEmptyContent()
     {
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, string.Empty));
 
         // Assert
@@ -53,7 +53,7 @@ public class MudMarkdownTests : TestContext
     public void Component_Renders_WithNullContent()
     {
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, null));
 
         // Assert
@@ -68,7 +68,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "**Bold text**";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -84,7 +84,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "# Heading 1\n## Heading 2";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -101,7 +101,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "- Item 1\n- Item 2";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -118,7 +118,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "```csharp\nvar x = 1;\n```";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -134,7 +134,7 @@ public class MudMarkdownTests : TestContext
         var customClass = "my-custom-class";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Class, customClass));
 
         // Assert
@@ -145,7 +145,7 @@ public class MudMarkdownTests : TestContext
     public void Component_ShowCopyButton_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudMarkdown>();
+        var cut = Render<MudMarkdown>();
 
         // Assert
         cut.Instance.ShowCopyButton.Should().BeTrue();
@@ -155,7 +155,7 @@ public class MudMarkdownTests : TestContext
     public void Component_EnableSyntaxHighlighting_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudMarkdown>();
+        var cut = Render<MudMarkdown>();
 
         // Assert
         cut.Instance.EnableSyntaxHighlighting.Should().BeTrue();
@@ -165,11 +165,11 @@ public class MudMarkdownTests : TestContext
     public void Component_ReRendersOnContentChange()
     {
         // Arrange
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, "**Initial**"));
 
         // Act
-        cut.SetParametersAndRender(parameters => parameters
+        cut.Render(parameters => parameters
             .Add(p => p.Content, "**Updated**"));
 
         // Assert
@@ -187,7 +187,7 @@ public class MudMarkdownTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.AdditionalAttributes, attributes));
 
         // Assert
@@ -201,7 +201,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "[Example](https://example.com)";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -217,7 +217,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "| Name | Age |\n|------|-----|\n| John | 30  |";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -233,7 +233,7 @@ public class MudMarkdownTests : TestContext
         var markdown = "> This is a quote";
 
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, markdown));
 
         // Assert
@@ -251,13 +251,13 @@ public class MudMarkdownTests : TestContext
             .Returns(new MarkupString("<p>Mocked content</p>"));
 
         // Create a new test context with mocked renderer
-        using var ctx = new TestContext();
+        using var ctx = new BunitContext();
         ctx.Services.AddMudServices();
         ctx.Services.AddSingleton(mockRenderer.Object);
         ctx.JSInterop.Mode = JSRuntimeMode.Loose;
 
         // Act
-        var cut = ctx.RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = ctx.Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, "Any content"));
 
         // Assert
@@ -269,7 +269,7 @@ public class MudMarkdownTests : TestContext
     public async Task Component_DisposeAsync_CompletesSuccessfully()
     {
         // Arrange
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.Content, "Test content"));
 
         // Act & Assert - Should not throw
@@ -283,11 +283,14 @@ public class MudMarkdownTests : TestContext
     public void Component_OnCodeCopied_EventCanBeSet()
     {
         // Act
-        var cut = RenderComponent<MudMarkdown>(parameters => parameters
+        var cut = Render<MudMarkdown>(parameters => parameters
             .Add(p => p.OnCodeCopied, EventCallback.Factory.Create<string>(this, _ => { })));
 
         // Assert
         cut.Instance.Should().NotBeNull();
         // The event callback is properly set (would be invoked when copy is triggered)
     }
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

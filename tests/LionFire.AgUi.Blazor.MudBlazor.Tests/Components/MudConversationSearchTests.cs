@@ -8,13 +8,13 @@ using MudBlazor.Services;
 
 namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 
-public class MudConversationSearchTests : TestContext
+public class MudConversationSearchTests : BunitContext, IAsyncLifetime
 {
     public MudConversationSearchTests()
     {
         Services.AddMudServices();
         JSInterop.Mode = JSRuntimeMode.Loose;
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     #region Rendering Tests
@@ -23,7 +23,7 @@ public class MudConversationSearchTests : TestContext
     public void Renders_WithDefaultParameters()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>();
+        var cut = Render<MudConversationSearch>();
 
         // Assert
         cut.Markup.Should().Contain("mud-conversation-search");
@@ -34,7 +34,7 @@ public class MudConversationSearchTests : TestContext
     public void Renders_WithCustomPlaceholder()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.Placeholder, "Custom placeholder"));
 
         // Assert
@@ -45,7 +45,7 @@ public class MudConversationSearchTests : TestContext
     public void Renders_WithCustomClass()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.Class, "custom-class"));
 
         // Assert
@@ -60,7 +60,7 @@ public class MudConversationSearchTests : TestContext
     public void ClearButton_IsHiddenWhenEmpty()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.ShowClearButton, true));
 
         // Assert
@@ -71,7 +71,7 @@ public class MudConversationSearchTests : TestContext
     public void ClearButton_IsHiddenWhenDisabled()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.ShowClearButton, false)
             .Add(p => p.SearchQuery, "test"));
 
@@ -87,7 +87,7 @@ public class MudConversationSearchTests : TestContext
     public void ProgressIndicator_IsHiddenWhenNotSearching()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.IsSearching, false));
 
         // Assert
@@ -98,7 +98,7 @@ public class MudConversationSearchTests : TestContext
     public void ProgressIndicator_IsVisibleWhenSearching()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.IsSearching, true));
 
         // Assert
@@ -113,7 +113,7 @@ public class MudConversationSearchTests : TestContext
     public void DebounceMs_DefaultsTo300()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>();
+        var cut = Render<MudConversationSearch>();
 
         // Assert
         cut.Instance.DebounceMs.Should().Be(300);
@@ -123,7 +123,7 @@ public class MudConversationSearchTests : TestContext
     public void ShowClearButton_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>();
+        var cut = Render<MudConversationSearch>();
 
         // Assert
         cut.Instance.ShowClearButton.Should().BeTrue();
@@ -133,7 +133,7 @@ public class MudConversationSearchTests : TestContext
     public void IsSearching_DefaultsToFalse()
     {
         // Act
-        var cut = RenderComponent<MudConversationSearch>();
+        var cut = Render<MudConversationSearch>();
 
         // Assert
         cut.Instance.IsSearching.Should().BeFalse();
@@ -148,12 +148,12 @@ public class MudConversationSearchTests : TestContext
     {
         // Arrange
         string? capturedValue = "initial";
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.SearchQuery, "test")
             .Add(p => p.SearchQueryChanged, EventCallback.Factory.Create<string?>(this, v => capturedValue = v)));
 
         // Simulate that internal state has a value by setting the parameter
-        cut.SetParametersAndRender(parameters => parameters
+        cut.Render(parameters => parameters
             .Add(p => p.SearchQuery, "test"));
 
         // Verify clear button exists (it may be shown based on internal state)
@@ -174,7 +174,7 @@ public class MudConversationSearchTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudConversationSearch>(parameters => parameters
+        var cut = Render<MudConversationSearch>(parameters => parameters
             .Add(p => p.AdditionalAttributes, additionalAttributes));
 
         // Assert
@@ -182,4 +182,7 @@ public class MudConversationSearchTests : TestContext
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

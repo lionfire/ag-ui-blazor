@@ -7,13 +7,13 @@ using MudBlazor.Services;
 
 namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 
-public class MudStateViewerTests : TestContext
+public class MudStateViewerTests : BunitContext, IAsyncLifetime
 {
     public MudStateViewerTests()
     {
         Services.AddMudServices();
         JSInterop.Mode = JSRuntimeMode.Loose;
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     #region Rendering Tests
@@ -22,7 +22,7 @@ public class MudStateViewerTests : TestContext
     public void Renders_WithDefaultParameters()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>();
+        var cut = Render<MudStateViewer>();
 
         // Assert
         cut.Markup.Should().Contain("mud-state-viewer");
@@ -33,7 +33,7 @@ public class MudStateViewerTests : TestContext
     public void Renders_WithCustomTitle()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>(parameters => parameters
+        var cut = Render<MudStateViewer>(parameters => parameters
             .Add(p => p.Title, "Custom State"));
 
         // Assert
@@ -44,7 +44,7 @@ public class MudStateViewerTests : TestContext
     public void Renders_EmptyMessage_WhenNoState()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>(parameters => parameters
+        var cut = Render<MudStateViewer>(parameters => parameters
             .Add(p => p.EmptyMessage, "No data"));
 
         // Assert
@@ -62,7 +62,7 @@ public class MudStateViewerTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudStateViewer>(parameters => parameters
+        var cut = Render<MudStateViewer>(parameters => parameters
             .Add(p => p.State, state));
 
         // Assert
@@ -80,7 +80,7 @@ public class MudStateViewerTests : TestContext
     public void Renders_LastUpdated_WhenProvided()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>(parameters => parameters
+        var cut = Render<MudStateViewer>(parameters => parameters
             .Add(p => p.LastUpdated, "2025-01-01 12:00:00"));
 
         // Assert
@@ -92,7 +92,7 @@ public class MudStateViewerTests : TestContext
     public void DoesNotRender_LastUpdated_WhenNull()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>(parameters => parameters
+        var cut = Render<MudStateViewer>(parameters => parameters
             .Add(p => p.LastUpdated, null));
 
         // Assert
@@ -107,7 +107,7 @@ public class MudStateViewerTests : TestContext
     public void ShowRefreshButton_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>();
+        var cut = Render<MudStateViewer>();
 
         // Assert
         cut.Instance.ShowRefreshButton.Should().BeTrue();
@@ -117,11 +117,14 @@ public class MudStateViewerTests : TestContext
     public void ShowExpandAllButton_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudStateViewer>();
+        var cut = Render<MudStateViewer>();
 
         // Assert
         cut.Instance.ShowExpandAllButton.Should().BeTrue();
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

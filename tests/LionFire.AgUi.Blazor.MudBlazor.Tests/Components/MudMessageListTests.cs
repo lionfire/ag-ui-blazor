@@ -1,6 +1,7 @@
 using Bunit;
 using FluentAssertions;
 using LionFire.AgUi.Blazor.Abstractions;
+using LionFire.AgUi.Blazor.Models;
 using LionFire.AgUi.Blazor.MudBlazor.Components;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudMessageList component.
 /// </summary>
-public class MudMessageListTests : TestContext
+public class MudMessageListTests : BunitContext, IAsyncLifetime
 {
     public MudMessageListTests()
     {
@@ -33,7 +34,7 @@ public class MudMessageListTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
 
         // Render MudPopoverProvider to support MudTooltip components
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     #region Rendering Tests
@@ -42,7 +43,7 @@ public class MudMessageListTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudMessageList>();
+        var cut = Render<MudMessageList>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -53,7 +54,7 @@ public class MudMessageListTests : TestContext
     public void Component_Shows_EmptyMessage_WhenNoMessages()
     {
         // Act
-        var cut = RenderComponent<MudMessageList>();
+        var cut = Render<MudMessageList>();
 
         // Assert
         var emptyContainer = cut.Find(".message-list-empty");
@@ -68,7 +69,7 @@ public class MudMessageListTests : TestContext
         var customMessage = "Start chatting with the assistant!";
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.EmptyMessage, customMessage));
 
         // Assert
@@ -87,7 +88,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -105,7 +106,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -126,7 +127,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -148,7 +149,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -168,8 +169,9 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
-            .Add(p => p.Messages, messages));
+        var cut = Render<MudMessageList>(parameters => parameters
+            .Add(p => p.Messages, messages)
+            .Add(p => p.SenderTitleDisplay, SenderTitleDisplayMode.Enabled));
 
         // Assert
         var roleLabels = cut.FindAll(".message-role");
@@ -193,7 +195,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages)
             .Add(p => p.IsStreaming, true));
 
@@ -212,7 +214,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages)
             .Add(p => p.IsStreaming, false));
 
@@ -232,7 +234,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages)
             .Add(p => p.IsStreaming, true));
 
@@ -248,7 +250,7 @@ public class MudMessageListTests : TestContext
         var messages = new List<ChatMessage>();
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages)
             .Add(p => p.IsStreaming, true));
 
@@ -271,7 +273,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -289,7 +291,7 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -305,7 +307,7 @@ public class MudMessageListTests : TestContext
     public void Component_Accepts_NullMessages()
     {
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, null));
 
         // Assert
@@ -319,7 +321,7 @@ public class MudMessageListTests : TestContext
         var additionalClass = "my-custom-class";
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Class, additionalClass));
 
         // Assert
@@ -331,7 +333,7 @@ public class MudMessageListTests : TestContext
     public void Component_Has_AutoScrollEnabled_ByDefault()
     {
         // Act
-        var cut = RenderComponent<MudMessageList>();
+        var cut = Render<MudMessageList>();
 
         // Assert
         cut.Instance.AutoScrollEnabled.Should().BeTrue();
@@ -341,7 +343,7 @@ public class MudMessageListTests : TestContext
     public void Component_Accepts_AutoScrollDisabled()
     {
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.AutoScrollEnabled, false));
 
         // Assert
@@ -364,8 +366,9 @@ public class MudMessageListTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
-            .Add(p => p.Messages, messages));
+        var cut = Render<MudMessageList>(parameters => parameters
+            .Add(p => p.Messages, messages)
+            .Add(p => p.SenderTitleDisplay, SenderTitleDisplayMode.Enabled));
 
         // Assert
         var messageContainers = cut.FindAll(".message-container");
@@ -390,7 +393,7 @@ public class MudMessageListTests : TestContext
         }
 
         // Act
-        var cut = RenderComponent<MudMessageList>(parameters => parameters
+        var cut = Render<MudMessageList>(parameters => parameters
             .Add(p => p.Messages, messages));
 
         // Assert
@@ -406,7 +409,7 @@ public class MudMessageListTests : TestContext
     public async Task ResetScrollState_ResetsUserScrolledUpFlag()
     {
         // Arrange
-        var cut = RenderComponent<MudMessageList>();
+        var cut = Render<MudMessageList>();
 
         // Simulate user scrolling up via JSInvokable method
         await cut.InvokeAsync(() => cut.Instance.OnScroll(false));
@@ -424,7 +427,7 @@ public class MudMessageListTests : TestContext
     public async Task OnScroll_AcceptsIsAtBottomParameter()
     {
         // Arrange
-        var cut = RenderComponent<MudMessageList>();
+        var cut = Render<MudMessageList>();
 
         // Act & Assert - Should not throw
         await cut.InvokeAsync(() => cut.Instance.OnScroll(true));
@@ -432,4 +435,7 @@ public class MudMessageListTests : TestContext
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

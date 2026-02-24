@@ -9,7 +9,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudTypingIndicator component.
 /// </summary>
-public class MudTypingIndicatorTests : TestContext
+public class MudTypingIndicatorTests : BunitContext, IAsyncLifetime
 {
     public MudTypingIndicatorTests()
     {
@@ -24,7 +24,7 @@ public class MudTypingIndicatorTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudTypingIndicator>();
+        var cut = Render<MudTypingIndicator>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -35,7 +35,7 @@ public class MudTypingIndicatorTests : TestContext
     public void Component_Renders_ThreeDots()
     {
         // Act
-        var cut = RenderComponent<MudTypingIndicator>();
+        var cut = Render<MudTypingIndicator>();
 
         // Assert
         var dots = cut.FindAll(".mud-typing-indicator .dot");
@@ -49,7 +49,7 @@ public class MudTypingIndicatorTests : TestContext
         var customClass = "my-custom-typing";
 
         // Act
-        var cut = RenderComponent<MudTypingIndicator>(parameters => parameters
+        var cut = Render<MudTypingIndicator>(parameters => parameters
             .Add(p => p.Class, customClass));
 
         // Assert
@@ -61,7 +61,7 @@ public class MudTypingIndicatorTests : TestContext
     public void Component_Accepts_AdditionalAttributes()
     {
         // Arrange & Act
-        var cut = RenderComponent<MudTypingIndicator>(parameters => parameters
+        var cut = Render<MudTypingIndicator>(parameters => parameters
             .AddUnmatched("data-testid", "typing-indicator")
             .AddUnmatched("aria-label", "Assistant is typing"));
 
@@ -70,4 +70,7 @@ public class MudTypingIndicatorTests : TestContext
         indicator.GetAttribute("data-testid").Should().Be("typing-indicator");
         indicator.GetAttribute("aria-label").Should().Be("Assistant is typing");
     }
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

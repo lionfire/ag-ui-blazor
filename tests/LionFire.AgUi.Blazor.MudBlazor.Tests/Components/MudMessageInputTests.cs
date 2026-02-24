@@ -11,7 +11,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudMessageInput component.
 /// </summary>
-public class MudMessageInputTests : TestContext
+public class MudMessageInputTests : BunitContext, IAsyncLifetime
 {
     public MudMessageInputTests()
     {
@@ -26,7 +26,7 @@ public class MudMessageInputTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -37,7 +37,7 @@ public class MudMessageInputTests : TestContext
     public void Component_Renders_WithDefaultPlaceholder()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         var textField = cut.FindComponent<MudTextField<string>>();
@@ -51,7 +51,7 @@ public class MudMessageInputTests : TestContext
         var placeholder = "Enter your message here...";
 
         // Act
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.Placeholder, placeholder));
 
         // Assert
@@ -63,7 +63,7 @@ public class MudMessageInputTests : TestContext
     public void Component_Renders_SendButton()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         var iconButton = cut.FindComponent<MudIconButton>();
@@ -74,7 +74,7 @@ public class MudMessageInputTests : TestContext
     public void SendButton_IsDisabled_WhenMessageIsEmpty()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         var iconButton = cut.FindComponent<MudIconButton>();
@@ -85,7 +85,7 @@ public class MudMessageInputTests : TestContext
     public void SendButton_IsDisabled_WhenComponentIsDisabled()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.Disabled, true));
 
         // Assert
@@ -97,7 +97,7 @@ public class MudMessageInputTests : TestContext
     public void TextField_IsDisabled_WhenComponentIsDisabled()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.Disabled, true));
 
         // Assert
@@ -110,7 +110,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var sentMessage = string.Empty;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string msg) => sentMessage = msg));
 
         // Use InvokeAsync to set message within renderer context
@@ -127,7 +127,7 @@ public class MudMessageInputTests : TestContext
     public async Task SendMessage_ClearsInput_AfterSending()
     {
         // Arrange
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string _) => { }));
 
         await cut.InvokeAsync(() => cut.Instance.SetMessage("Test message"));
@@ -144,7 +144,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var wasCalled = false;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.Disabled, true)
             .Add(p => p.OnSend, (string _) => wasCalled = true));
 
@@ -163,7 +163,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var wasCalled = false;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string _) => wasCalled = true));
 
         // Act
@@ -178,7 +178,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var wasCalled = false;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string _) => wasCalled = true));
 
         await cut.InvokeAsync(() => cut.Instance.SetMessage("   "));
@@ -195,7 +195,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var sentMessage = string.Empty;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string msg) => sentMessage = msg));
 
         await cut.InvokeAsync(() => cut.Instance.SetMessage("  Hello, world!  "));
@@ -212,7 +212,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var sentMessage = string.Empty;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string msg) => sentMessage = msg));
 
         await cut.InvokeAsync(() => cut.Instance.SetMessage("Enter test"));
@@ -238,7 +238,7 @@ public class MudMessageInputTests : TestContext
     {
         // Arrange
         var wasCalled = false;
-        var cut = RenderComponent<MudMessageInput>(parameters => parameters
+        var cut = Render<MudMessageInput>(parameters => parameters
             .Add(p => p.OnSend, (string _) => wasCalled = true));
 
         await cut.InvokeAsync(() => cut.Instance.SetMessage("Shift+Enter test"));
@@ -264,7 +264,7 @@ public class MudMessageInputTests : TestContext
     public async Task Clear_ClearsMessage()
     {
         // Arrange
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
         await cut.InvokeAsync(() => cut.Instance.SetMessage("Test message"));
 
         // Act
@@ -278,7 +278,7 @@ public class MudMessageInputTests : TestContext
     public async Task SetMessage_SetsMessageText()
     {
         // Arrange
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Act
         await cut.InvokeAsync(() => cut.Instance.SetMessage("New message"));
@@ -291,7 +291,7 @@ public class MudMessageInputTests : TestContext
     public void TextField_HasAutoGrowEnabled()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         var textField = cut.FindComponent<MudTextField<string>>();
@@ -302,7 +302,7 @@ public class MudMessageInputTests : TestContext
     public void TextField_HasMaxLines_SetToFive()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         var textField = cut.FindComponent<MudTextField<string>>();
@@ -313,10 +313,13 @@ public class MudMessageInputTests : TestContext
     public void TextField_HasOutlinedVariant()
     {
         // Act
-        var cut = RenderComponent<MudMessageInput>();
+        var cut = Render<MudMessageInput>();
 
         // Assert
         var textField = cut.FindComponent<MudTextField<string>>();
         textField.Instance.Variant.Should().Be(Variant.Outlined);
     }
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

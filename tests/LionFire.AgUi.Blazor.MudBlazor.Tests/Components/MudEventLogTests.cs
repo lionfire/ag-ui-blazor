@@ -7,13 +7,13 @@ using MudBlazor.Services;
 
 namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 
-public class MudEventLogTests : TestContext
+public class MudEventLogTests : BunitContext, IAsyncLifetime
 {
     public MudEventLogTests()
     {
         Services.AddMudServices();
         JSInterop.Mode = JSRuntimeMode.Loose;
-        RenderComponent<MudPopoverProvider>();
+        Render<MudPopoverProvider>();
     }
 
     #region Rendering Tests
@@ -22,7 +22,7 @@ public class MudEventLogTests : TestContext
     public void Renders_WithDefaultParameters()
     {
         // Act
-        var cut = RenderComponent<MudEventLog>();
+        var cut = Render<MudEventLog>();
 
         // Assert
         cut.Markup.Should().Contain("mud-event-log");
@@ -33,7 +33,7 @@ public class MudEventLogTests : TestContext
     public void Renders_WithCustomTitle()
     {
         // Act
-        var cut = RenderComponent<MudEventLog>(parameters => parameters
+        var cut = Render<MudEventLog>(parameters => parameters
             .Add(p => p.Title, "Custom Log"));
 
         // Assert
@@ -44,7 +44,7 @@ public class MudEventLogTests : TestContext
     public void Renders_WithEmptyMessage_WhenNoEvents()
     {
         // Act
-        var cut = RenderComponent<MudEventLog>(parameters => parameters
+        var cut = Render<MudEventLog>(parameters => parameters
             .Add(p => p.EmptyMessage, "No events yet"));
 
         // Assert
@@ -61,7 +61,7 @@ public class MudEventLogTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudEventLog>(parameters => parameters
+        var cut = Render<MudEventLog>(parameters => parameters
             .Add(p => p.Events, events));
 
         // Assert
@@ -87,7 +87,7 @@ public class MudEventLogTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudEventLog>(parameters => parameters
+        var cut = Render<MudEventLog>(parameters => parameters
             .Add(p => p.Events, events));
 
         // Assert
@@ -108,7 +108,7 @@ public class MudEventLogTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudEventLog>(parameters => parameters
+        var cut = Render<MudEventLog>(parameters => parameters
             .Add(p => p.Events, events)
             .Add(p => p.ShowClearButton, true));
 
@@ -126,7 +126,7 @@ public class MudEventLogTests : TestContext
         };
 
         // Act
-        var cut = RenderComponent<MudEventLog>(parameters => parameters
+        var cut = Render<MudEventLog>(parameters => parameters
             .Add(p => p.Events, events)
             .Add(p => p.ShowClearButton, false));
 
@@ -142,7 +142,7 @@ public class MudEventLogTests : TestContext
     public void MaxVisibleEvents_DefaultsTo100()
     {
         // Act
-        var cut = RenderComponent<MudEventLog>();
+        var cut = Render<MudEventLog>();
 
         // Assert
         cut.Instance.MaxVisibleEvents.Should().Be(100);
@@ -152,11 +152,14 @@ public class MudEventLogTests : TestContext
     public void ShowClearButton_DefaultsToTrue()
     {
         // Act
-        var cut = RenderComponent<MudEventLog>();
+        var cut = Render<MudEventLog>();
 
         // Assert
         cut.Instance.ShowClearButton.Should().BeTrue();
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }

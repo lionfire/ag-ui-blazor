@@ -10,7 +10,7 @@ namespace LionFire.AgUi.Blazor.MudBlazor.Tests.Components;
 /// <summary>
 /// Unit tests for the MudConnectionStatus component.
 /// </summary>
-public class MudConnectionStatusTests : TestContext
+public class MudConnectionStatusTests : BunitContext, IAsyncLifetime
 {
     public MudConnectionStatusTests()
     {
@@ -27,7 +27,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Renders_Successfully()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>();
+        var cut = Render<MudConnectionStatus>();
 
         // Assert
         cut.Should().NotBeNull();
@@ -38,7 +38,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Renders_StatusDot()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>();
+        var cut = Render<MudConnectionStatus>();
 
         // Assert
         var dot = cut.Find(".status-dot");
@@ -53,7 +53,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_GreenDot_WhenConnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Connected));
 
         // Assert
@@ -65,7 +65,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_ConnectedClass_WhenConnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Connected));
 
         // Assert
@@ -77,7 +77,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_ConnectedTitle_WhenConnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Connected));
 
         // Assert
@@ -93,7 +93,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_YellowDot_WhenConnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Connecting));
 
         // Assert
@@ -105,7 +105,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_PulsingDot_WhenConnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Connecting));
 
         // Assert
@@ -117,7 +117,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_ConnectingTitle_WhenConnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Connecting));
 
         // Assert
@@ -133,7 +133,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_YellowDot_WhenReconnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Reconnecting));
 
         // Assert
@@ -145,7 +145,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_PulsingDot_WhenReconnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Reconnecting));
 
         // Assert
@@ -157,7 +157,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_ReconnectingTitle_WhenReconnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Reconnecting));
 
         // Assert
@@ -173,7 +173,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_RedDot_WhenDisconnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Disconnected));
 
         // Assert
@@ -185,7 +185,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_DisconnectedTitle_WhenDisconnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Disconnected));
 
         // Assert
@@ -201,7 +201,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_RedDot_WhenError()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Error));
 
         // Assert
@@ -213,7 +213,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_Shows_ErrorTitle_WhenError()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.State, ConnectionState.Error));
 
         // Assert
@@ -229,7 +229,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_DefaultsTo_Disconnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>();
+        var cut = Render<MudConnectionStatus>();
 
         // Assert
         var container = cut.Find(".mud-connection-status");
@@ -244,7 +244,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_HidesLabel_ByDefault()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>();
+        var cut = Render<MudConnectionStatus>();
 
         // Assert
         var labels = cut.FindAll(".status-label");
@@ -255,7 +255,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_ShowsLabel_WhenEnabled()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.ShowLabel, true)
             .Add(p => p.State, ConnectionState.Connected));
 
@@ -269,7 +269,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_ShowsConnectingLabel_WhenConnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.ShowLabel, true)
             .Add(p => p.State, ConnectionState.Connecting));
 
@@ -282,7 +282,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_ShowsReconnectingLabel_WhenReconnecting()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.ShowLabel, true)
             .Add(p => p.State, ConnectionState.Reconnecting));
 
@@ -295,7 +295,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_ShowsDisconnectedLabel_WhenDisconnected()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.ShowLabel, true)
             .Add(p => p.State, ConnectionState.Disconnected));
 
@@ -308,7 +308,7 @@ public class MudConnectionStatusTests : TestContext
     public void Component_ShowsErrorLabel_WhenError()
     {
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.ShowLabel, true)
             .Add(p => p.State, ConnectionState.Error));
 
@@ -328,7 +328,7 @@ public class MudConnectionStatusTests : TestContext
         var customClass = "my-custom-status";
 
         // Act
-        var cut = RenderComponent<MudConnectionStatus>(parameters => parameters
+        var cut = Render<MudConnectionStatus>(parameters => parameters
             .Add(p => p.Class, customClass)
             .Add(p => p.State, ConnectionState.Connected));
 
@@ -338,4 +338,7 @@ public class MudConnectionStatusTests : TestContext
     }
 
     #endregion
+
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    async Task IAsyncLifetime.DisposeAsync() => await base.DisposeAsync();
 }
