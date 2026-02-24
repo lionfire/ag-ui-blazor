@@ -395,7 +395,6 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     {
         try
         {
-            Console.WriteLine($"ScrollToBottomAsync called, _scrollModule is {(_scrollModule is null ? "null" : "set")}");
             if (_scrollModule is not null)
             {
                 await _scrollModule.InvokeVoidAsync("scrollToBottom", _scrollContainer);
@@ -403,7 +402,6 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
             else
             {
                 // Fallback to inline JS if module not loaded
-                Console.WriteLine("Using fallback scroll");
                 await JSRuntime.InvokeVoidAsync("eval",
                     "arguments[0].scrollTop = arguments[0].scrollHeight", _scrollContainer);
             }
