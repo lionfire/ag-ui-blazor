@@ -64,13 +64,15 @@
     gap: 8px;
 }
 
-/* Selected state */
+/* Selected state - subtle highlight that works across light and dark themes */
 ::deep .conversation-item-selected {
-    background-color: var(--mud-palette-primary-lighten) !important;
+    background-color: var(--mud-palette-primary-hover) !important;
+    border-left: 3px solid var(--mud-palette-primary);
 }
 
 ::deep .conversation-item-selected .conversation-item-title {
-    color: var(--mud-palette-primary);
+    color: var(--mud-palette-text-primary);
+    font-weight: 600;
 }
 
 /* Delete button */

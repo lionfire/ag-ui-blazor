@@ -22,21 +22,6 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     private string? _editingContent;
 
     /// <summary>
-    /// Gets or sets whether dark mode is active. When set, adjusts user bubble background color.
-    /// Can be set via CascadingParameter from a parent component or explicitly via parameter.
-    /// </summary>
-    [CascadingParameter(Name = "IsDarkMode")]
-    public bool? CascadedIsDarkMode { get; set; }
-
-    /// <summary>
-    /// Explicitly sets dark mode. Takes precedence over CascadingParameter.
-    /// </summary>
-    [Parameter]
-    public bool? IsDarkMode { get; set; }
-
-    private bool EffectiveIsDarkMode => IsDarkMode ?? CascadedIsDarkMode ?? false;
-
-    /// <summary>
     /// MudBlazor constants for use in razor template.
     /// </summary>
     protected static string AssistantAvatarIcon => Icons.Material.Filled.SmartToy;
@@ -283,11 +268,7 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     {
         if (IsUserMessage(message))
         {
-            // In dark mode, use a darker background for user bubbles for better contrast
-            var bgColor = EffectiveIsDarkMode
-                ? "var(--mud-palette-gray-darker)"
-                : "var(--mud-palette-gray-lighter)";
-            return $"background-color: {bgColor}; color: var(--mud-palette-text-primary);";
+            return "background-color: var(--mud-palette-surface); color: var(--mud-palette-text-primary);";
         }
         else
         {
