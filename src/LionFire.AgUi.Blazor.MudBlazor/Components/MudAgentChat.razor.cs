@@ -399,6 +399,12 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             Logger.LogDebug("Received complete response from agent {AgentName}, length: {ResponseLength}",
                 AgentName, contentBuilder.Length);
 
+            // Successful response — update connection state if it was degraded
+            if (_connectionState != ConnectionState.Connected)
+            {
+                _connectionState = AgentFactory.GetConnectionState();
+            }
+
             if (OnMessageReceived.HasDelegate)
             {
                 await OnMessageReceived.InvokeAsync(_messages[^1]);
