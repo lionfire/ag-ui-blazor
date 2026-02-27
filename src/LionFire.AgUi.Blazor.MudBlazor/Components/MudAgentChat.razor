@@ -46,7 +46,6 @@
 
     <div class="mud-agent-chat-input">
         <MudMessageInput OnSend="@SendMessageAsync"
-                         Disabled="@(_connectionState == Models.ConnectionState.Error || _agent == null)"
                          Placeholder="@GetInputPlaceholder()" />
     </div>
 </MudPaper>

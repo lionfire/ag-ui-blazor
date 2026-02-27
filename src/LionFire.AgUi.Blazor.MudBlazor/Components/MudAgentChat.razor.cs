@@ -331,7 +331,7 @@ public partial class MudAgentChat : ComponentBase, IDisposable
 
         if (_agent == null)
         {
-            _errorMessage = "Agent is not available";
+            _errorMessage = "Agent is not available. No commands are registered.";
             return;
         }
 
@@ -385,7 +385,7 @@ public partial class MudAgentChat : ComponentBase, IDisposable
 
             // Stream response
             var contentBuilder = new StringBuilder();
-            await foreach (var update in _agent!.CompleteStreamingAsync(_messages, cancellationToken: _cts.Token))
+            await foreach (var update in _agent!.GetStreamingResponseAsync(_messages, cancellationToken: _cts.Token))
             {
                 if (update.Text != null)
                 {
@@ -717,9 +717,9 @@ public partial class MudAgentChat : ComponentBase, IDisposable
     /// <returns>The placeholder text.</returns>
     private string GetInputPlaceholder()
     {
-        if (_connectionState == ConnectionState.Error || _agent == null)
+        if (_connectionState == ConnectionState.Error || _connectionState == ConnectionState.Disconnected || _agent == null)
         {
-            return "Agent unavailable...";
+            return "Agent unavailable — type /help for commands...";
         }
 
         if (_isStreaming)
