@@ -134,7 +134,6 @@ internal sealed class ChatMessageConverter : JsonConverter<ChatMessage>
                 element.TryGetProperty("arguments", out var args) ? args.Deserialize<IDictionary<string, object?>>() : null),
             "functionResult" => new FunctionResultContent(
                 element.GetProperty("callId").GetString() ?? string.Empty,
-                element.TryGetProperty("name", out var funcName) ? funcName.GetString() ?? string.Empty : string.Empty,
                 element.TryGetProperty("result", out var result) ? result.Deserialize<object>() : null),
             _ => new TextContent(element.ToString()) // Fallback
         };
@@ -185,7 +184,6 @@ internal sealed class ChatMessageConverter : JsonConverter<ChatMessage>
             case FunctionResultContent functionResult:
                 writer.WriteString("type", "functionResult");
                 writer.WriteString("callId", functionResult.CallId);
-                writer.WriteString("name", functionResult.Name ?? string.Empty);
                 if (functionResult.Result != null)
                 {
                     writer.WritePropertyName("result");
@@ -226,7 +224,6 @@ internal sealed class AIContentConverter : JsonConverter<AIContent>
                 root.TryGetProperty("arguments", out var args) ? args.Deserialize<IDictionary<string, object?>>() : null),
             "functionResult" => new FunctionResultContent(
                 root.GetProperty("callId").GetString() ?? string.Empty,
-                root.TryGetProperty("name", out var funcName) ? funcName.GetString() ?? string.Empty : string.Empty,
                 root.TryGetProperty("result", out var result) ? result.Deserialize<object>() : null),
             _ => new TextContent(root.ToString())
         };
@@ -257,7 +254,6 @@ internal sealed class AIContentConverter : JsonConverter<AIContent>
             case FunctionResultContent functionResult:
                 writer.WriteString("type", "functionResult");
                 writer.WriteString("callId", functionResult.CallId);
-                writer.WriteString("name", functionResult.Name ?? string.Empty);
                 if (functionResult.Result != null)
                 {
                     writer.WritePropertyName("result");
