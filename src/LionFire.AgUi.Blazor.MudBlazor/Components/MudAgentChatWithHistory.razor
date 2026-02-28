@@ -25,10 +25,12 @@
                                OnClick="ToggleDrawer"
                                Class="drawer-toggle" />
                 <MudText Typo="@H6Typo" Class="chat-title">@GetChatTitle()</MudText>
+                @if (ToolbarContent != null) { <MudSpacer /> @ToolbarContent }
             </div>
 
             <MudAgentChat @ref="_chatComponent"
                           AgentName="@AgentName"
+                          InitialMessages="@InitialMessages"
                           ShowConnectionStatus="@ShowConnectionStatus"
                           OnMessageSent="HandleMessageSentAsync"
                           OnMessageReceived="HandleMessageReceivedAsync"
@@ -36,11 +38,18 @@
         }
         else
         {
-            <div class="no-agent-selected">
-                <MudText Typo="@Body1Typo" Color="@TertiaryColor">
-                    Select a conversation or start a new one
-                </MudText>
-            </div>
+            @if (EmptyContent != null)
+            {
+                @EmptyContent
+            }
+            else
+            {
+                <div class="no-agent-selected">
+                    <MudText Typo="@Body1Typo" Color="@TertiaryColor">
+                        Select a conversation or start a new one
+                    </MudText>
+                </div>
+            }
         }
     </div>
 </div>

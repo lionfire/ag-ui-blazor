@@ -56,6 +56,25 @@ public partial class MudAgentChatWithHistory : ComponentBase
     public string? AgentName { get; set; }
 
     /// <summary>
+    /// Gets or sets initial messages to seed the conversation with (e.g., when loading a saved conversation).
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<ChatMessage>? InitialMessages { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom content to display when no agent is selected.
+    /// If not set, a default placeholder is shown.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? EmptyContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom content to display in the toolbar area (after the title).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ToolbarContent { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to show the connection status indicator.
     /// Default is true.
     /// </summary>

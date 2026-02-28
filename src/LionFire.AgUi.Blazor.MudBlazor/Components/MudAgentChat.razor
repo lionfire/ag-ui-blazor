@@ -7,17 +7,6 @@
      @onkeydown="HandleKeyDown"
      tabindex="0">
 <MudPaper Elevation="4" Style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
-    @if (!string.IsNullOrEmpty(_errorMessage))
-    {
-        <MudAlert Severity="@SeverityError"
-                  Class="mud-agent-chat-error"
-                  Variant="@AlertVariant"
-                  ShowCloseIcon="true"
-                  CloseIconClicked="ClearError">
-            @_errorMessage
-        </MudAlert>
-    }
-
     @if (ShowConnectionStatus)
     {
         <div class="mud-agent-chat-status">
@@ -42,6 +31,17 @@
                 @_messageQueue.Count message@(_messageQueue.Count > 1 ? "s" : "") queued
             </MudChip>
         </div>
+    }
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="@SeverityError"
+                  Class="mud-agent-chat-error"
+                  Variant="@AlertVariant"
+                  ShowCloseIcon="true"
+                  CloseIconClicked="ClearError">
+            @_errorMessage
+        </MudAlert>
     }
 
     <div class="mud-agent-chat-input">

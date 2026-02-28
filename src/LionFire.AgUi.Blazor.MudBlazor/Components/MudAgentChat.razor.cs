@@ -99,6 +99,12 @@ public partial class MudAgentChat : ComponentBase, IDisposable
     public EventCallback<ChatMessage> OnMessageReceived { get; set; }
 
     /// <summary>
+    /// Gets or sets initial messages to seed the conversation with (e.g., when loading a saved conversation).
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<ChatMessage>? InitialMessages { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback invoked when the user requests a new chat (Ctrl+K).
     /// If not set, the conversation will be cleared instead.
     /// </summary>
@@ -264,6 +270,11 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             {
                 _connectionState = AgentFactory.GetConnectionState();
                 Logger.LogInformation("Successfully initialized agent: {AgentName}", AgentName);
+            }
+
+            if (InitialMessages is { Count: > 0 })
+            {
+                _messages.AddRange(InitialMessages);
             }
         }
         catch (Exception ex)
