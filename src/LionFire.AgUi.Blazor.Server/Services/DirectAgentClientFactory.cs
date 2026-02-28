@@ -38,7 +38,7 @@ namespace LionFire.AgUi.Blazor.Server.Services;
 /// var agent = await AgentFactory.GetAgentAsync("assistant");
 /// if (agent != null)
 /// {
-///     await foreach (var update in agent.CompleteStreamingAsync(...))
+///     await foreach (var update in agent.GetStreamingResponseAsync(...))
 ///     {
 ///         // Handle streaming response
 ///     }

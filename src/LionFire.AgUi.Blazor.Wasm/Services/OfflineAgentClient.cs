@@ -45,11 +45,8 @@ public sealed class OfflineAgentClient : IChatClient
     }
 
     /// <inheritdoc />
-    public ChatClientMetadata Metadata => _innerClient.Metadata;
-
-    /// <inheritdoc />
-    public async Task<ChatCompletion> CompleteAsync(
-        IList<ChatMessage> chatMessages,
+    public async Task<ChatResponse> GetResponseAsync(
+        IEnumerable<ChatMessage> chatMessages,
         ChatOptions? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -61,7 +58,7 @@ public sealed class OfflineAgentClient : IChatClient
                 await ProcessQueuedMessagesAsync(cancellationToken);
 
                 // Then send the current message
-                return await _innerClient.CompleteAsync(chatMessages, options, cancellationToken);
+                return await _innerClient.GetResponseAsync(chatMessages, options, cancellationToken);
             }
             catch (HttpRequestException ex)
             {
@@ -79,8 +76,8 @@ public sealed class OfflineAgentClient : IChatClient
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<StreamingChatCompletionUpdate> CompleteStreamingAsync(
-        IList<ChatMessage> chatMessages,
+    public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+        IEnumerable<ChatMessage> chatMessages,
         ChatOptions? options = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -95,19 +92,10 @@ public sealed class OfflineAgentClient : IChatClient
         await ProcessQueuedMessagesAsync(cancellationToken);
 
         // Then stream the current message
-        await foreach (var update in _innerClient.CompleteStreamingAsync(chatMessages, options, cancellationToken))
+        await foreach (var update in _innerClient.GetStreamingResponseAsync(chatMessages, options, cancellationToken))
         {
             yield return update;
         }
-    }
-
-    /// <inheritdoc />
-    public TService? GetService<TService>(object? key = null) where TService : class
-    {
-        if (typeof(TService) == typeof(OfflineAgentClient))
-            return this as TService;
-
-        return _innerClient.GetService<TService>(key);
     }
 
     /// <inheritdoc />
@@ -148,7 +136,7 @@ public sealed class OfflineAgentClient : IChatClient
             try
             {
                 _logger.LogDebug("Processing queued message {MessageId}", message.Id);
-                await _innerClient.CompleteAsync(message.Messages, null, ct);
+                await _innerClient.GetResponseAsync(message.Messages, null, ct);
                 await _messageQueue.MarkDeliveredAsync(message.Id, ct);
                 _logger.LogInformation("Successfully delivered queued message {MessageId}", message.Id);
             }
@@ -168,7 +156,7 @@ public sealed class OfflineAgentClient : IChatClient
         }
     }
 
-    private async Task QueueMessageAsync(IList<ChatMessage> chatMessages, CancellationToken ct)
+    private async Task QueueMessageAsync(IEnumerable<ChatMessage> chatMessages, CancellationToken ct)
     {
         var queuedMessage = new QueuedMessage
         {

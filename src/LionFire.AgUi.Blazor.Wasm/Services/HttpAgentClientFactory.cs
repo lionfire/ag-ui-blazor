@@ -177,10 +177,8 @@ internal sealed class HttpChatClient : IChatClient
         _logger = logger;
     }
 
-    public ChatClientMetadata Metadata => new(nameof(HttpChatClient), _httpClient.BaseAddress ?? new Uri("http://localhost"));
-
-    public async Task<ChatCompletion> CompleteAsync(
-        IList<ChatMessage> chatMessages,
+    public async Task<ChatResponse> GetResponseAsync(
+        IEnumerable<ChatMessage> chatMessages,
         ChatOptions? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -199,19 +197,19 @@ internal sealed class HttpChatClient : IChatClient
         var result = await response.Content.ReadFromJsonAsync<ChatCompletionDto>(cts.Token);
         if (result == null)
         {
-            return new ChatCompletion(new ChatMessage(ChatRole.Assistant, "Error: Empty response from server"));
+            return new ChatResponse(new ChatMessage(ChatRole.Assistant, "Error: Empty response from server"));
         }
 
         var message = new ChatMessage(ChatRole.Assistant, result.Content ?? string.Empty);
-        return new ChatCompletion(message)
+        return new ChatResponse(message)
         {
-            CompletionId = result.Id,
+            ResponseId = result.Id,
             ModelId = result.Model
         };
     }
 
-    public async IAsyncEnumerable<StreamingChatCompletionUpdate> CompleteStreamingAsync(
-        IList<ChatMessage> chatMessages,
+    public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+        IEnumerable<ChatMessage> chatMessages,
         ChatOptions? options = null,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -246,18 +244,9 @@ internal sealed class HttpChatClient : IChatClient
                     yield break;
 
                 // Parse SSE data as streaming update
-                yield return new StreamingChatCompletionUpdate
-                {
-                    Text = data,
-                    Role = ChatRole.Assistant
-                };
+                yield return new ChatResponseUpdate(ChatRole.Assistant, data);
             }
         }
-    }
-
-    public TService? GetService<TService>(object? key = null) where TService : class
-    {
-        return this as TService;
     }
 
     public object? GetService(Type serviceType, object? key = null)
