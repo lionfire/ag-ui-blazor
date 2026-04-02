@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.AI;
 using MudBlazor;
 
+
 namespace LionFire.AgUi.Blazor.MudBlazor.Components;
 
 /// <summary>
@@ -117,6 +118,13 @@ public partial class MudAgentChatWithHistory : ComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<ChatMessage> OnMessageReceived { get; set; }
+
+    /// <summary>
+    /// Gets or sets the thinking/reasoning display mode.
+    /// Default is Hide, which merges thinking into the regular response.
+    /// </summary>
+    [Parameter]
+    public ThinkingDisplayMode ThinkingDisplay { get; set; } = ThinkingDisplayMode.Hide;
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the layout.

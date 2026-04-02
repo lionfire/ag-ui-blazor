@@ -1,3 +1,4 @@
+using System.Text;
 using LionFire.AgUi.Blazor.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.AI;
@@ -35,6 +36,9 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     protected static string IconCheck => Icons.Material.Filled.Check;
     protected static string IconClose => Icons.Material.Filled.Close;
     protected static string IconStop => Icons.Material.Filled.Stop;
+    protected static string IconBrain => Icons.Material.Filled.Psychology;
+    protected static string IconExpand => Icons.Material.Filled.ExpandMore;
+    protected static string IconCollapse => Icons.Material.Filled.ExpandLess;
 
     // Variant constants for razor template
     protected static global::MudBlazor.Variant VariantOutlined => global::MudBlazor.Variant.Outlined;
@@ -124,6 +128,13 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public string UserLabel { get; set; } = "You";
+
+    /// <summary>
+    /// Gets or sets the thinking/reasoning display mode.
+    /// Default is Hide, which merges thinking into the regular response.
+    /// </summary>
+    [Parameter]
+    public ThinkingDisplayMode ThinkingDisplay { get; set; } = ThinkingDisplayMode.Hide;
 
     /// <summary>
     /// Gets or sets whether auto-scroll to bottom is enabled when new messages arrive.
@@ -358,14 +369,15 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Extracts the text content from a chat message.
+    /// Extracts the text content from a chat message, excluding thinking content when applicable.
     /// </summary>
     /// <param name="message">The message.</param>
     /// <returns>The text content of the message.</returns>
     protected string GetMessageContent(ChatMessage message)
     {
-        // ChatMessage.Text property provides the concatenated text content
-        // from all TextContent items in the Contents collection
+        if (HasThinkingContent(message))
+            return GetRegularContent(message);
+
         return message.Text ?? string.Empty;
     }
 
@@ -449,6 +461,88 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
 
         _dotNetRef?.Dispose();
     }
+
+    #region Thinking Content
+
+    private readonly HashSet<int> _expandedThinkingPanels = new();
+
+    /// <summary>
+    /// Checks whether a message has thinking/reasoning content.
+    /// </summary>
+    protected bool HasThinkingContent(ChatMessage message)
+    {
+        if (ThinkingDisplay == ThinkingDisplayMode.Hide) return false;
+        return message.Contents.Any(c =>
+            c is TextContent tc &&
+            tc.AdditionalProperties?.TryGetValue("is_reasoning", out var val) == true &&
+            val is true);
+    }
+
+    /// <summary>
+    /// Gets the thinking/reasoning text from a message.
+    /// </summary>
+    protected string GetThinkingContent(ChatMessage message)
+    {
+        var sb = new StringBuilder();
+        foreach (var content in message.Contents)
+        {
+            if (content is TextContent tc &&
+                tc.AdditionalProperties?.TryGetValue("is_reasoning", out var val) == true &&
+                val is true)
+            {
+                sb.Append(tc.Text);
+            }
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Gets only the regular (non-reasoning) text from a message.
+    /// </summary>
+    protected string GetRegularContent(ChatMessage message)
+    {
+        if (!HasThinkingContent(message))
+            return message.Text ?? string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var content in message.Contents)
+        {
+            if (content is TextContent tc)
+            {
+                var isReasoning = tc.AdditionalProperties?.TryGetValue("is_reasoning", out var val) == true
+                                  && val is true;
+                if (!isReasoning)
+                    sb.Append(tc.Text);
+            }
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Gets a short preview of thinking content (last 3 lines).
+    /// </summary>
+    protected string GetThinkingPreview(ChatMessage message)
+    {
+        var thinking = GetThinkingContent(message);
+        if (string.IsNullOrEmpty(thinking)) return string.Empty;
+
+        var lines = thinking.Split('\n');
+        var previewLines = lines.Length > 3 ? lines[^3..] : lines;
+        return string.Join('\n', previewLines);
+    }
+
+    protected bool IsThinkingExpanded(int index)
+    {
+        return ThinkingDisplay == ThinkingDisplayMode.Expanded || _expandedThinkingPanels.Contains(index);
+    }
+
+    protected void ToggleThinkingPanel(int index)
+    {
+        if (!_expandedThinkingPanels.Remove(index))
+            _expandedThinkingPanels.Add(index);
+    }
+
+    #endregion
 
     #region Message Actions
 

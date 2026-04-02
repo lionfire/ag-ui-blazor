@@ -127,7 +127,7 @@ internal sealed class ChatMessageConverter : JsonConverter<ChatMessage>
 
         return type switch
         {
-            "text" => new TextContent(element.GetProperty("text").GetString() ?? string.Empty),
+            "text" => DeserializeTextContent(element),
             "functionCall" => new FunctionCallContent(
                 element.GetProperty("callId").GetString() ?? string.Empty,
                 element.GetProperty("name").GetString() ?? string.Empty,
@@ -137,6 +137,17 @@ internal sealed class ChatMessageConverter : JsonConverter<ChatMessage>
                 element.TryGetProperty("result", out var result) ? result.Deserialize<object>() : null),
             _ => new TextContent(element.ToString()) // Fallback
         };
+    }
+
+    private static TextContent DeserializeTextContent(JsonElement element)
+    {
+        var tc = new TextContent(element.GetProperty("text").GetString() ?? string.Empty);
+        if (element.TryGetProperty("isReasoning", out var reasoningProp) && reasoningProp.GetBoolean())
+        {
+            tc.AdditionalProperties ??= new AdditionalPropertiesDictionary();
+            tc.AdditionalProperties["is_reasoning"] = true;
+        }
+        return tc;
     }
 
     public override void Write(Utf8JsonWriter writer, ChatMessage value, JsonSerializerOptions options)
@@ -168,6 +179,11 @@ internal sealed class ChatMessageConverter : JsonConverter<ChatMessage>
             case TextContent textContent:
                 writer.WriteString("type", "text");
                 writer.WriteString("text", textContent.Text);
+                if (textContent.AdditionalProperties?.TryGetValue("is_reasoning", out var isReasoning) == true
+                    && isReasoning is true)
+                {
+                    writer.WriteBoolean("isReasoning", true);
+                }
                 break;
 
             case FunctionCallContent functionCall:
@@ -217,7 +233,7 @@ internal sealed class AIContentConverter : JsonConverter<AIContent>
 
         return type switch
         {
-            "text" => new TextContent(root.GetProperty("text").GetString() ?? string.Empty),
+            "text" => DeserializeTextContentFromElement(root),
             "functionCall" => new FunctionCallContent(
                 root.GetProperty("callId").GetString() ?? string.Empty,
                 root.GetProperty("name").GetString() ?? string.Empty,
@@ -229,6 +245,17 @@ internal sealed class AIContentConverter : JsonConverter<AIContent>
         };
     }
 
+    private static TextContent DeserializeTextContentFromElement(JsonElement element)
+    {
+        var tc = new TextContent(element.GetProperty("text").GetString() ?? string.Empty);
+        if (element.TryGetProperty("isReasoning", out var reasoningProp) && reasoningProp.GetBoolean())
+        {
+            tc.AdditionalProperties ??= new AdditionalPropertiesDictionary();
+            tc.AdditionalProperties["is_reasoning"] = true;
+        }
+        return tc;
+    }
+
     public override void Write(Utf8JsonWriter writer, AIContent value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
@@ -238,6 +265,11 @@ internal sealed class AIContentConverter : JsonConverter<AIContent>
             case TextContent textContent:
                 writer.WriteString("type", "text");
                 writer.WriteString("text", textContent.Text);
+                if (textContent.AdditionalProperties?.TryGetValue("is_reasoning", out var isReasoning) == true
+                    && isReasoning is true)
+                {
+                    writer.WriteBoolean("isReasoning", true);
+                }
                 break;
 
             case FunctionCallContent functionCall:

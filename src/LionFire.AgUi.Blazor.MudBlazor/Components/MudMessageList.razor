@@ -63,6 +63,43 @@
                         }
                         else
                         {
+                            @if (HasThinkingContent(message))
+                            {
+                                <div class="thinking-section">
+                                    @if (ThinkingDisplay == ThinkingDisplayMode.Expanded)
+                                    {
+                                        <div class="thinking-header">
+                                            <MudIcon Icon="@IconBrain" Size="@SmallSize" />
+                                            <span>Thinking</span>
+                                        </div>
+                                        <div class="thinking-content">
+                                            <MudMarkdown Content="@GetThinkingContent(message)" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="thinking-panel">
+                                            <div class="thinking-header clickable" @onclick="() => ToggleThinkingPanel(index)">
+                                                <MudIcon Icon="@IconBrain" Size="@SmallSize" />
+                                                <span>Thinking</span>
+                                                <MudIcon Icon="@(IsThinkingExpanded(index) ? IconCollapse : IconExpand)" Size="@SmallSize" />
+                                            </div>
+                                            @if (IsThinkingExpanded(index))
+                                            {
+                                                <div class="thinking-content">
+                                                    <MudMarkdown Content="@GetThinkingContent(message)" />
+                                                </div>
+                                            }
+                                            else if (ThinkingDisplay == ThinkingDisplayMode.CollapsedPreview)
+                                            {
+                                                <div class="thinking-preview" @onclick="() => ToggleThinkingPanel(index)">
+                                                    <MudMarkdown Content="@GetThinkingPreview(message)" />
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
                             <div class="message-content">
                                 <MudMarkdown Content="@GetMessageContent(message)" />
                             </div>

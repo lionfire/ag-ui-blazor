@@ -118,6 +118,13 @@ public partial class MudAgentChat : ComponentBase, IDisposable
     public string? CssClass { get; set; }
 
     /// <summary>
+    /// Gets or sets the thinking/reasoning display mode.
+    /// Default is Hide, which merges thinking into the regular response.
+    /// </summary>
+    [Parameter]
+    public ThinkingDisplayMode ThinkingDisplay { get; set; } = ThinkingDisplayMode.Hide;
+
+    /// <summary>
     /// Gets or sets additional HTML attributes to apply to the container.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
@@ -394,21 +401,46 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             _messages.Add(assistantMsg);
             StateHasChanged();
 
-            // Stream response
+            // Stream response, separating reasoning from regular content
             var contentBuilder = new StringBuilder();
+            var reasoningBuilder = new StringBuilder();
             await foreach (var update in _agent!.GetStreamingResponseAsync(_messages, cancellationToken: _cts.Token))
             {
                 if (update.Text != null)
                 {
-                    contentBuilder.Append(update.Text);
-                    // Update the last message with accumulated content
-                    _messages[^1] = new ChatMessage(ChatRole.Assistant, contentBuilder.ToString());
+                    var isReasoning = update.AdditionalProperties?.TryGetValue("is_reasoning", out var val) == true
+                                      && val is true;
+
+                    if (isReasoning && ThinkingDisplay != ThinkingDisplayMode.Hide)
+                    {
+                        reasoningBuilder.Append(update.Text);
+                    }
+                    else
+                    {
+                        contentBuilder.Append(update.Text);
+                    }
+
+                    // Build message with separate content items when we have reasoning
+                    if (reasoningBuilder.Length > 0 && ThinkingDisplay != ThinkingDisplayMode.Hide)
+                    {
+                        var contents = new List<AIContent>();
+                        var reasoningContent = new TextContent(reasoningBuilder.ToString());
+                        reasoningContent.AdditionalProperties ??= new AdditionalPropertiesDictionary();
+                        reasoningContent.AdditionalProperties["is_reasoning"] = true;
+                        contents.Add(reasoningContent);
+                        contents.Add(new TextContent(contentBuilder.ToString()));
+                        _messages[^1] = new ChatMessage(ChatRole.Assistant, contents);
+                    }
+                    else
+                    {
+                        _messages[^1] = new ChatMessage(ChatRole.Assistant, contentBuilder.ToString());
+                    }
                     StateHasChanged();
                 }
             }
 
-            Logger.LogDebug("Received complete response from agent {AgentName}, length: {ResponseLength}",
-                AgentName, contentBuilder.Length);
+            Logger.LogDebug("Received complete response from agent {AgentName}, length: {ResponseLength} (reasoning: {ReasoningLength})",
+                AgentName, contentBuilder.Length, reasoningBuilder.Length);
 
             // Successful response — update connection state if it was degraded
             if (_connectionState != ConnectionState.Connected)
