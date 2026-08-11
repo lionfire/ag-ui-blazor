@@ -20,6 +20,7 @@
                         AutoScrollEnabled="true"
                         EmptyMessage="@GetEmptyMessage()"
                         ThinkingDisplay="@ThinkingDisplay"
+                        MessageFooter="@MessageFooter"
                         OnRegenerate="@HandleRegenerateAsync"
                         OnEdit="@HandleEditAsync"
                         OnStop="@HandleStopAsync" />
@@ -45,9 +46,14 @@
         </MudAlert>
     }
 
+    @* Disabled only when no agent resolved (nothing could be sent anywhere). Deliberately
+       NOT disabled during streaming: typed messages queue and send when the stream ends. *@
     <div class="mud-agent-chat-input">
         <MudMessageInput OnSend="@SendMessageAsync"
-                         Placeholder="@GetInputPlaceholder()" />
+                         Placeholder="@GetInputPlaceholder()"
+                         Disabled="@(_agent == null)"
+                         FooterStart="@ComposerFooterStart"
+                         FooterEnd="@ComposerFooterEnd" />
     </div>
 </MudPaper>
 </div>

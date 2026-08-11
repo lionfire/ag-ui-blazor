@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (2026-08-11)
+- `MudMessageInput`: generic `FooterStart`/`FooterEnd` RenderFragment slots rendering a
+  control row beneath the text field (send button moves into the footer row). When both
+  are null, the classic single-row layout is preserved unchanged.
+- `MudAgentChat` / `MudAgentChatWithHistory`: `ComposerFooterStart`/`ComposerFooterEnd`
+  pass-through parameters for the new composer footer slots.
+- `MudAgentChat` / `MudAgentChatWithHistory`: `ChatOptionsProvider` (`Func<ChatOptions?>`)
+  evaluated at send time and forwarded to `GetStreamingResponseAsync`, enabling consumer-
+  supplied per-request model overrides, sampling parameters, and (later) tools.
+- `MudMessageList` / `MudAgentChat` / `MudAgentChatWithHistory`: `MessageFooter`
+  (`RenderFragment<ChatMessage>`) template rendered beneath each message bubble (e.g.,
+  model attribution captions).
+- `MudAgentChat`: the response's `ChatResponseUpdate.ModelId` (when reported) is stamped
+  onto the final assistant message's `AdditionalProperties["model_id"]`.
+
+### Fixed (2026-08-11)
+- `MudAgentChat` now passes `Disabled` to `MudMessageInput` when no agent could be
+  resolved (input looked operable but nothing could be sent). Deliberately still enabled
+  during streaming so message queueing keeps working.
+
 ### Added
 - Initial project structure and repository setup
 - Multi-targeting support for .NET 8.0 and .NET 9.0

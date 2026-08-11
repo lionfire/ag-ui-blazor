@@ -137,6 +137,14 @@ public partial class MudMessageList : ComponentBase, IAsyncDisposable
     public ThinkingDisplayMode ThinkingDisplay { get; set; } = ThinkingDisplayMode.Hide;
 
     /// <summary>
+    /// Optional template rendered beneath each message bubble (e.g., model attribution).
+    /// The template receives the <see cref="ChatMessage"/> and decides whether to render
+    /// anything, so it can no-op for messages it has nothing to say about.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ChatMessage>? MessageFooter { get; set; }
+
+    /// <summary>
     /// Gets or sets whether auto-scroll to bottom is enabled when new messages arrive.
     /// Default is true.
     /// </summary>

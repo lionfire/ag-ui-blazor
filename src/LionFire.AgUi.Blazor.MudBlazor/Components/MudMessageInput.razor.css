@@ -13,6 +13,49 @@
     flex-grow: 1;
 }
 
+/* Footer-row variant: field row on top, control row beneath, sharing the same surface */
+.mud-message-input.has-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+}
+
+.mud-message-input-field-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.mud-message-input-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    min-width: 0;
+}
+
+.mud-message-input-footer-start {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.mud-message-input-footer-spacer {
+    flex: 1 1 auto;
+}
+
+.mud-message-input-footer-end {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
 .mud-message-input :deep(.mud-icon-button) {
     margin-bottom: 4px;
 }

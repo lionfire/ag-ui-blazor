@@ -76,6 +76,34 @@ public partial class MudAgentChatWithHistory : ComponentBase
     public RenderFragment? ToolbarContent { get; set; }
 
     /// <summary>
+    /// Optional content rendered at the left of the composer footer row (beneath the
+    /// text field). Forwarded to <see cref="MudAgentChat.ComposerFooterStart"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ComposerFooterStart { get; set; }
+
+    /// <summary>
+    /// Optional content rendered right-aligned in the composer footer row, before the
+    /// send button. Forwarded to <see cref="MudAgentChat.ComposerFooterEnd"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ComposerFooterEnd { get; set; }
+
+    /// <summary>
+    /// Optional template rendered beneath each message bubble (e.g., model attribution).
+    /// Forwarded to <see cref="MudAgentChat.MessageFooter"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ChatMessage>? MessageFooter { get; set; }
+
+    /// <summary>
+    /// Optional provider of per-request <see cref="ChatOptions"/>, evaluated at send time.
+    /// Forwarded to <see cref="MudAgentChat.ChatOptionsProvider"/>.
+    /// </summary>
+    [Parameter]
+    public Func<ChatOptions?>? ChatOptionsProvider { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to show the connection status indicator.
     /// Default is true.
     /// </summary>

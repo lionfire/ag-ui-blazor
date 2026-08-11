@@ -105,6 +105,10 @@
                             </div>
                         }
                     </MudPaper>
+                    @if (MessageFooter is not null && !IsEditing(index))
+                    {
+                        @MessageFooter(message)
+                    }
                     @if (ShowMessageActions && !IsEditing(index))
                     {
                         <div class="message-actions">

@@ -130,6 +130,37 @@ public partial class MudAgentChat : ComponentBase, IDisposable
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Optional content rendered at the left of the composer footer row (beneath the
+    /// text field). Forwarded to <see cref="MudMessageInput.FooterStart"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ComposerFooterStart { get; set; }
+
+    /// <summary>
+    /// Optional content rendered right-aligned in the composer footer row, before the
+    /// send button. Forwarded to <see cref="MudMessageInput.FooterEnd"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ComposerFooterEnd { get; set; }
+
+    /// <summary>
+    /// Optional template rendered beneath each message bubble (e.g., model attribution).
+    /// The template receives the <see cref="ChatMessage"/> and decides whether to render
+    /// anything. Forwarded to <see cref="MudMessageList.MessageFooter"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ChatMessage>? MessageFooter { get; set; }
+
+    /// <summary>
+    /// Optional provider of per-request <see cref="ChatOptions"/>, evaluated at send time
+    /// for each request (including regenerate/edit resends). Enables consumers to supply
+    /// model overrides, sampling parameters, or tools without re-creating the component.
+    /// Return null for provider defaults.
+    /// </summary>
+    [Parameter]
+    public Func<ChatOptions?>? ChatOptionsProvider { get; set; }
+
     #endregion
 
     #region Injected Services
@@ -401,11 +432,32 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             _messages.Add(assistantMsg);
             StateHasChanged();
 
+            // Evaluate per-request options at send time so the latest consumer-side
+            // selections (model override, sampling parameters) apply to this request.
+            ChatOptions? chatOptions = null;
+            if (ChatOptionsProvider is not null)
+            {
+                try
+                {
+                    chatOptions = ChatOptionsProvider();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "ChatOptionsProvider threw; proceeding without options");
+                }
+            }
+
             // Stream response, separating reasoning from regular content
             var contentBuilder = new StringBuilder();
             var reasoningBuilder = new StringBuilder();
-            await foreach (var update in _agent!.GetStreamingResponseAsync(_messages, cancellationToken: _cts.Token))
+            string? responseModelId = null;
+            await foreach (var update in _agent!.GetStreamingResponseAsync(_messages, chatOptions, _cts.Token))
             {
+                if (!string.IsNullOrEmpty(update.ModelId))
+                {
+                    responseModelId = update.ModelId;
+                }
+
                 if (update.Text != null)
                 {
                     var isReasoning = update.AdditionalProperties?.TryGetValue("is_reasoning", out var val) == true
@@ -446,6 +498,17 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             if (_connectionState != ConnectionState.Connected)
             {
                 _connectionState = AgentFactory.GetConnectionState();
+            }
+
+            // Stamp the model that produced the response so consumers (attribution
+            // captions, persistence) can read it from the message itself.
+            if (responseModelId is not null
+                && _messages.Count > 0
+                && _messages[^1].Role == ChatRole.Assistant)
+            {
+                var finalMessage = _messages[^1];
+                finalMessage.AdditionalProperties ??= new AdditionalPropertiesDictionary();
+                finalMessage.AdditionalProperties["model_id"] = responseModelId;
             }
 
             if (OnMessageReceived.HasDelegate)

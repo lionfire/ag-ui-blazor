@@ -28,6 +28,21 @@ public partial class MudMessageInput : ComponentBase, IAsyncDisposable
         return "background-color: var(--mud-palette-surface);";
     }
 
+    /// <summary>
+    /// Whether a footer row is rendered beneath the text field.
+    /// When false, the classic single-row layout (field + send button) is preserved.
+    /// </summary>
+    protected bool HasFooter => FooterStart is not null || FooterEnd is not null;
+
+    /// <summary>
+    /// Gets the CSS class for the input container, adding the footer variant when
+    /// footer content is present.
+    /// </summary>
+    protected string GetContainerClass()
+    {
+        return HasFooter ? "mud-message-input has-footer" : "mud-message-input";
+    }
+
     // MudBlazor constants for use in razor template
     protected static string SendIcon => Icons.Material.Filled.ArrowUpward;
     protected static Variant OutlinedVariant => Variant.Outlined;
@@ -50,6 +65,23 @@ public partial class MudMessageInput : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public string Placeholder { get; set; } = "Type a message...";
+
+    /// <summary>
+    /// Optional content rendered at the left of a footer row beneath the text field
+    /// (e.g., model or mode selectors supplied by the consuming application).
+    /// When both <see cref="FooterStart"/> and <see cref="FooterEnd"/> are null,
+    /// no footer row is rendered and the classic single-row layout is preserved.
+    /// When either is set, the send button moves to the right end of the footer row.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? FooterStart { get; set; }
+
+    /// <summary>
+    /// Optional content rendered right-aligned in the footer row, immediately before
+    /// the send button. See <see cref="FooterStart"/> for layout semantics.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? FooterEnd { get; set; }
 
     /// <summary>
     /// Gets the current message text. Useful for testing.

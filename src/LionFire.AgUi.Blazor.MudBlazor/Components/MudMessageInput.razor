@@ -1,20 +1,54 @@
 @namespace LionFire.AgUi.Blazor.MudBlazor.Components
 @implements IAsyncDisposable
 
-<div @ref="_containerRef" class="mud-message-input" style="@GetContainerStyle()">
-    <MudTextField @ref="_textField"
-                  @bind-Value="_message"
-                  Placeholder="@Placeholder"
-                  Lines="1"
-                  AutoGrow="true"
-                  MaxLines="5"
-                  Variant="@OutlinedVariant"
-                  Disabled="@Disabled"
-                  Immediate="true"
-                  Class="flex-grow-1" />
-    <MudIconButton Icon="@SendIcon"
-                   Color="@PrimaryColor"
-                   Disabled="@(Disabled || string.IsNullOrWhiteSpace(_message))"
-                   OnClick="SendMessage"
-                   aria-label="Send message" />
+<div @ref="_containerRef" class="@GetContainerClass()" style="@GetContainerStyle()">
+    @if (HasFooter)
+    {
+        <div class="mud-message-input-field-row">
+            <MudTextField @ref="_textField"
+                          @bind-Value="_message"
+                          Placeholder="@Placeholder"
+                          Lines="1"
+                          AutoGrow="true"
+                          MaxLines="5"
+                          Variant="@OutlinedVariant"
+                          Disabled="@Disabled"
+                          Immediate="true"
+                          Class="flex-grow-1" />
+        </div>
+        <div class="mud-message-input-footer">
+            @if (FooterStart is not null)
+            {
+                <div class="mud-message-input-footer-start">@FooterStart</div>
+            }
+            <div class="mud-message-input-footer-spacer"></div>
+            @if (FooterEnd is not null)
+            {
+                <div class="mud-message-input-footer-end">@FooterEnd</div>
+            }
+            <MudIconButton Icon="@SendIcon"
+                           Color="@PrimaryColor"
+                           Disabled="@(Disabled || string.IsNullOrWhiteSpace(_message))"
+                           OnClick="SendMessage"
+                           aria-label="Send message" />
+        </div>
+    }
+    else
+    {
+        <MudTextField @ref="_textField"
+                      @bind-Value="_message"
+                      Placeholder="@Placeholder"
+                      Lines="1"
+                      AutoGrow="true"
+                      MaxLines="5"
+                      Variant="@OutlinedVariant"
+                      Disabled="@Disabled"
+                      Immediate="true"
+                      Class="flex-grow-1" />
+        <MudIconButton Icon="@SendIcon"
+                       Color="@PrimaryColor"
+                       Disabled="@(Disabled || string.IsNullOrWhiteSpace(_message))"
+                       OnClick="SendMessage"
+                       aria-label="Send message" />
+    }
 </div>
