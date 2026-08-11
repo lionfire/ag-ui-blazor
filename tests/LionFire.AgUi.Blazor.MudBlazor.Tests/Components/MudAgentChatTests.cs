@@ -588,6 +588,104 @@ public partial class MudAgentChatTests : BunitContext, IAsyncLifetime
 
     #endregion
 
+    #region Failure Surface Tests
+
+    [Fact] // A timeout is not a user cancel: TaskCanceledException from a timed-out
+           // HTTP request must surface as a visible error, never be swallowed as
+           // "user cancelled". (Regression: send to an offline endpoint died silently.)
+    public async Task NonUserCancellation_SurfacesTimeoutError()
+    {
+        SetupAgentFactory(_mockChatClient.Object);
+
+        _mockChatClient
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Returns(ThrowingStream(new TaskCanceledException("A task was canceled.")));
+
+        var cut = Render<MudAgentChat>(parameters => parameters
+            .Add(p => p.AgentName, "test-agent"));
+
+        await cut.InvokeAsync(() => cut.Instance.SendMessageAsync("Hello"));
+
+        cut.Instance.ErrorMessage.Should().NotBeNullOrEmpty();
+        cut.Instance.ErrorMessage.Should().Contain("timed out");
+        cut.Instance.IsStreaming.Should().BeFalse();
+    }
+
+    [Fact] // A stream that completes without yielding any content must surface an
+           // error and must NOT leave an empty assistant bubble in the transcript.
+    public async Task EmptyCompletedResponse_SurfacesErrorAndRemovesPlaceholder()
+    {
+        SetupAgentFactory(_mockChatClient.Object);
+
+        _mockChatClient
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Returns(new List<ChatResponseUpdate>().ToAsyncEnumerable());
+
+        var cut = Render<MudAgentChat>(parameters => parameters
+            .Add(p => p.AgentName, "test-agent"));
+
+        await cut.InvokeAsync(() => cut.Instance.SendMessageAsync("Hello"));
+
+        cut.Instance.ErrorMessage.Should().NotBeNullOrEmpty();
+        cut.Instance.ErrorMessage.Should().Contain("empty response");
+        cut.Instance.Messages.Should().HaveCount(1); // the user message only
+        cut.Instance.Messages[0].Role.Should().Be(ChatRole.User);
+    }
+
+    [Fact] // A failed send must not leave the empty assistant placeholder behind.
+    public async Task FailedSend_RemovesEmptyAssistantPlaceholder()
+    {
+        SetupAgentFactory(_mockChatClient.Object);
+
+        _mockChatClient
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Returns(ThrowingStream(new HttpRequestException("connection refused")));
+
+        var cut = Render<MudAgentChat>(parameters => parameters
+            .Add(p => p.AgentName, "test-agent"));
+
+        await cut.InvokeAsync(() => cut.Instance.SendMessageAsync("Hello"));
+
+        cut.Instance.ErrorMessage.Should().Contain("Network error");
+        cut.Instance.Messages.Should().HaveCount(1);
+        cut.Instance.Messages[0].Role.Should().Be(ChatRole.User);
+    }
+
+    [Fact] // The request sent to the provider must not include the visual assistant
+           // placeholder: a trailing empty assistant message makes several chat
+           // templates emit an immediate empty end-of-turn.
+    public async Task RequestMessages_DoNotIncludeEmptyAssistantPlaceholder()
+    {
+        SetupAgentFactory(_mockChatClient.Object);
+
+        IEnumerable<ChatMessage>? sentMessages = null;
+        _mockChatClient
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Callback<IEnumerable<ChatMessage>, ChatOptions?, CancellationToken>((msgs, _, _) => sentMessages = msgs)
+            .Returns(new List<ChatResponseUpdate> { new(ChatRole.Assistant, "Hi") }.ToAsyncEnumerable());
+
+        var cut = Render<MudAgentChat>(parameters => parameters
+            .Add(p => p.AgentName, "test-agent"));
+
+        await cut.InvokeAsync(() => cut.Instance.SendMessageAsync("Hello"));
+
+        sentMessages.Should().NotBeNull();
+        var sent = sentMessages!.ToList();
+        sent.Should().NotBeEmpty();
+        sent[^1].Role.Should().Be(ChatRole.User); // last message sent is the user's, not an empty assistant stub
+    }
+
+    private static async IAsyncEnumerable<ChatResponseUpdate> ThrowingStream(Exception ex)
+    {
+        await Task.Yield();
+        throw ex;
+#pragma warning disable CS0162 // unreachable — required so the method is an iterator
+        yield break;
+#pragma warning restore CS0162
+    }
+
+    #endregion
+
     #region Disposal Tests
 
     [Fact]

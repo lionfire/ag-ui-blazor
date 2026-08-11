@@ -407,6 +407,7 @@ public partial class MudAgentChat : ComponentBase, IDisposable
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
+        var cancellationToken = _cts.Token;
 
         try
         {
@@ -426,6 +427,13 @@ public partial class MudAgentChat : ComponentBase, IDisposable
 
             Logger.LogDebug("Sending message to agent {AgentName}: {MessagePreview}",
                 AgentName, userMessage.Length > 50 ? userMessage[..50] + "..." : userMessage);
+
+            // Snapshot the conversation to send BEFORE adding the visual placeholder:
+            // a trailing empty assistant message reaches the provider otherwise, and
+            // several chat templates interpret that as "the assistant already answered"
+            // and immediately emit end-of-turn — observed live as instant empty
+            // responses (finish_reason=stop, empty delta) from LM Studio.
+            var requestMessages = _messages.ToList();
 
             // Create assistant message placeholder
             var assistantMsg = new ChatMessage(ChatRole.Assistant, string.Empty);
@@ -451,7 +459,7 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             var contentBuilder = new StringBuilder();
             var reasoningBuilder = new StringBuilder();
             string? responseModelId = null;
-            await foreach (var update in _agent!.GetStreamingResponseAsync(_messages, chatOptions, _cts.Token))
+            await foreach (var update in _agent!.GetStreamingResponseAsync(requestMessages, chatOptions, cancellationToken))
             {
                 if (!string.IsNullOrEmpty(update.ModelId))
                 {
@@ -494,6 +502,16 @@ public partial class MudAgentChat : ComponentBase, IDisposable
             Logger.LogDebug("Received complete response from agent {AgentName}, length: {ResponseLength} (reasoning: {ReasoningLength})",
                 AgentName, contentBuilder.Length, reasoningBuilder.Length);
 
+            // A stream that completed without producing anything is a failure the user
+            // must see — an empty bubble that looks like an answer is not an answer.
+            if (contentBuilder.Length == 0 && reasoningBuilder.Length == 0)
+            {
+                RemoveTrailingEmptyAssistantPlaceholder();
+                _errorMessage = "The model returned an empty response. It may have mishandled the request — try again, or try another model.";
+                Logger.LogWarning("Agent {AgentName} completed streaming with an empty response", AgentName);
+                return;
+            }
+
             // Successful response — update connection state if it was degraded
             if (_connectionState != ConnectionState.Connected)
             {
@@ -516,24 +534,37 @@ public partial class MudAgentChat : ComponentBase, IDisposable
                 await OnMessageReceived.InvokeAsync(_messages[^1]);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             Logger.LogInformation("Streaming response cancelled for agent {AgentName}", AgentName);
             // User cancelled - this is expected, don't show error
+            RemoveTrailingEmptyAssistantPlaceholder();
+        }
+        catch (OperationCanceledException ex)
+        {
+            // NOT user-initiated: an HttpClient/timeout cancellation (TaskCanceledException
+            // derives from OperationCanceledException). Swallowing this as "user cancelled"
+            // is how a timed-out send once died silently with no visible error.
+            RemoveTrailingEmptyAssistantPlaceholder();
+            _errorMessage = "The request timed out before the model responded. The endpoint may be down or overloaded.";
+            Logger.LogError(ex, "Non-user cancellation (timeout) while communicating with agent {AgentName}", AgentName);
         }
         catch (HttpRequestException ex)
         {
+            RemoveTrailingEmptyAssistantPlaceholder();
             _errorMessage = $"Network error: {ex.Message}";
             _connectionState = ConnectionState.Error;
             Logger.LogError(ex, "Network error while communicating with agent {AgentName}", AgentName);
         }
         catch (TimeoutException ex)
         {
+            RemoveTrailingEmptyAssistantPlaceholder();
             _errorMessage = $"Request timed out: {ex.Message}";
             Logger.LogError(ex, "Timeout while communicating with agent {AgentName}", AgentName);
         }
         catch (Exception ex)
         {
+            RemoveTrailingEmptyAssistantPlaceholder();
             _errorMessage = $"Error: {ex.Message}";
             Logger.LogError(ex, "Error processing agent response for {AgentName}", AgentName);
         }
@@ -544,6 +575,21 @@ public partial class MudAgentChat : ComponentBase, IDisposable
 
             // Process any pending messages
             await ProcessPendingMessagesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Removes the streaming placeholder when a send failed or produced nothing, so no
+    /// empty assistant bubble lingers (or gets persisted) looking like an answer.
+    /// Only a trailing assistant message with no content is ever removed.
+    /// </summary>
+    private void RemoveTrailingEmptyAssistantPlaceholder()
+    {
+        if (_messages.Count > 0
+            && _messages[^1].Role == ChatRole.Assistant
+            && string.IsNullOrEmpty(_messages[^1].Text))
+        {
+            _messages.RemoveAt(_messages.Count - 1);
         }
     }
 
