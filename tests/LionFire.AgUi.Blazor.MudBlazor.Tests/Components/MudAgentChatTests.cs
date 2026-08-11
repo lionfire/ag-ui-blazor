@@ -434,13 +434,13 @@ public partial class MudAgentChatTests : BunitContext, IAsyncLifetime
         SetupAgentFactory(_mockChatClient.Object);
 
         // Setup streaming response
-        var streamingResponses = new List<StreamingChatCompletionUpdate>
+        var streamingResponses = new List<ChatResponseUpdate>
         {
-            new StreamingChatCompletionUpdate { Text = "Hello" }
+            new ChatResponseUpdate(ChatRole.Assistant, "Hello")
         };
 
         _mockChatClient
-            .Setup(c => c.CompleteStreamingAsync(It.IsAny<IList<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
             .Returns(streamingResponses.ToAsyncEnumerable());
 
         var cut = Render<MudAgentChat>(parameters => parameters
@@ -463,13 +463,13 @@ public partial class MudAgentChatTests : BunitContext, IAsyncLifetime
         SetupAgentFactory(_mockChatClient.Object);
 
         // Setup streaming response
-        var streamingResponses = new List<StreamingChatCompletionUpdate>
+        var streamingResponses = new List<ChatResponseUpdate>
         {
-            new StreamingChatCompletionUpdate { Text = "Response text" }
+            new ChatResponseUpdate(ChatRole.Assistant, "Response text")
         };
 
         _mockChatClient
-            .Setup(c => c.CompleteStreamingAsync(It.IsAny<IList<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
             .Returns(streamingResponses.ToAsyncEnumerable());
 
         var cut = Render<MudAgentChat>(parameters => parameters
@@ -526,6 +526,68 @@ public partial class MudAgentChatTests : BunitContext, IAsyncLifetime
 
     #endregion
 
+    #region ChatOptions Tests
+
+    [Fact]
+    public async Task ChatOptionsProvider_OptionsFlowToStreamingRequest()
+    {
+        // Arrange
+        SetupAgentFactory(_mockChatClient.Object);
+
+        var streamingResponses = new List<ChatResponseUpdate>
+        {
+            new ChatResponseUpdate(ChatRole.Assistant, "Hello")
+        };
+
+        _mockChatClient
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Returns(streamingResponses.ToAsyncEnumerable());
+
+        var cut = Render<MudAgentChat>(parameters => parameters
+            .Add(p => p.AgentName, "test-agent")
+            .Add(p => p.ChatOptionsProvider, () => new ChatOptions { ModelId = "override-model", Temperature = 0.5f }));
+
+        // Act
+        await cut.InvokeAsync(() => cut.Instance.SendMessageAsync("Test message"));
+
+        // Assert - the provider's options were evaluated at send time and forwarded
+        _mockChatClient.Verify(c => c.GetStreamingResponseAsync(
+            It.IsAny<IEnumerable<ChatMessage>>(),
+            It.Is<ChatOptions?>(o => o != null && o.ModelId == "override-model" && o.Temperature == 0.5f),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task StreamingResponse_ModelId_IsStampedOnAssistantMessage()
+    {
+        // Arrange
+        SetupAgentFactory(_mockChatClient.Object);
+
+        var streamingResponses = new List<ChatResponseUpdate>
+        {
+            new ChatResponseUpdate(ChatRole.Assistant, "Hello") { ModelId = "responding-model" }
+        };
+
+        _mockChatClient
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Returns(streamingResponses.ToAsyncEnumerable());
+
+        ChatMessage? receivedMessage = null;
+        var cut = Render<MudAgentChat>(parameters => parameters
+            .Add(p => p.AgentName, "test-agent")
+            .Add(p => p.OnMessageReceived, (ChatMessage msg) => receivedMessage = msg));
+
+        // Act
+        await cut.InvokeAsync(() => cut.Instance.SendMessageAsync("Test message"));
+
+        // Assert
+        receivedMessage.Should().NotBeNull();
+        receivedMessage!.AdditionalProperties.Should().NotBeNull();
+        receivedMessage.AdditionalProperties!["model_id"].Should().Be("responding-model");
+    }
+
+    #endregion
+
     #region Disposal Tests
 
     [Fact]
@@ -568,7 +630,7 @@ public partial class MudAgentChatTests : BunitContext, IAsyncLifetime
         var streamingResponses = CreateSlowStreamingResponses(tcs);
 
         _mockChatClient
-            .Setup(c => c.CompleteStreamingAsync(It.IsAny<IList<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetStreamingResponseAsync(It.IsAny<IEnumerable<ChatMessage>>(), It.IsAny<ChatOptions?>(), It.IsAny<CancellationToken>()))
             .Returns(streamingResponses);
 
         var cut = Render<MudAgentChat>(parameters => parameters
@@ -617,11 +679,11 @@ internal static class AsyncEnumerableExtensions
 /// </summary>
 public partial class MudAgentChatTests
 {
-    private static async IAsyncEnumerable<StreamingChatCompletionUpdate> CreateSlowStreamingResponses(
+    private static async IAsyncEnumerable<ChatResponseUpdate> CreateSlowStreamingResponses(
         TaskCompletionSource<bool> tcs,
         [System.Runtime.CompilerServices.EnumeratorCancellation] System.Threading.CancellationToken cancellationToken = default)
     {
-        yield return new StreamingChatCompletionUpdate { Text = "Hello" };
+        yield return new ChatResponseUpdate(ChatRole.Assistant, "Hello");
 
         // Wait for cancellation or completion
         try
@@ -633,6 +695,6 @@ public partial class MudAgentChatTests
             yield break;
         }
 
-        yield return new StreamingChatCompletionUpdate { Text = " world" };
+        yield return new ChatResponseUpdate(ChatRole.Assistant, " world");
     }
 }

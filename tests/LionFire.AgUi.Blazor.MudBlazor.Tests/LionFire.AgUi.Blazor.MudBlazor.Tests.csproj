@@ -9,7 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="bunit" Version="2.5.3" />
-    <PackageReference Include="Markdig" Version="0.38.0" />
+    <!-- Markdig pinned to match LionFire.AgUi.Blazor.MudBlazor's floor (NU1605 downgrade otherwise);
+         AngleSharp lifted above bunit's transitive 1.4.0 (NU1902 known vulnerability, warnings-as-errors). -->
+    <PackageReference Include="Markdig" Version="0.41.3" />
+    <PackageReference Include="AngleSharp" Version="1.5.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />

@@ -217,17 +217,8 @@ public class MudMessageInputTests : BunitContext, IAsyncLifetime
 
         await cut.InvokeAsync(() => cut.Instance.SetMessage("Enter test"));
 
-        // Simulate Enter key
-        var enterKeyArgs = new KeyboardEventArgs { Key = "Enter", ShiftKey = false };
-
-        // Act - use reflection to access the protected method for testing
-        await cut.InvokeAsync(async () =>
-        {
-            var handleKeyDownMethod = typeof(MudMessageInput).GetMethod("HandleKeyDown",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var task = (Task?)handleKeyDownMethod?.Invoke(cut.Instance, new object[] { enterKeyArgs });
-            if (task != null) await task;
-        });
+        // Act - Enter (without Shift) is routed from JS interop to HandleEnterPressed
+        await cut.InvokeAsync(() => cut.Instance.HandleEnterPressed());
 
         // Assert
         sentMessage.Should().Be("Enter test");
@@ -318,6 +309,46 @@ public class MudMessageInputTests : BunitContext, IAsyncLifetime
         // Assert
         var textField = cut.FindComponent<MudTextField<string>>();
         textField.Instance.Variant.Should().Be(Variant.Outlined);
+    }
+
+    [Fact]
+    public void FooterSlots_Null_PreservesClassicSingleRowLayout()
+    {
+        // Act
+        var cut = Render<MudMessageInput>();
+
+        // Assert - no footer row, no footer variant class
+        cut.FindAll(".mud-message-input-footer").Should().BeEmpty();
+        cut.Find(".mud-message-input").ClassList.Should().NotContain("has-footer");
+        // Send button still present in the classic row
+        cut.FindAll("button").Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void FooterStart_Provided_RendersFooterRowWithContentAndSendButton()
+    {
+        // Act
+        var cut = Render<MudMessageInput>(parameters => parameters
+            .Add(p => p.FooterStart, builder => builder.AddMarkupContent(0, "<span id='model-picker-stub'>model</span>")));
+
+        // Assert
+        cut.Find(".mud-message-input").ClassList.Should().Contain("has-footer");
+        cut.Find(".mud-message-input-footer").Should().NotBeNull();
+        cut.Find("#model-picker-stub").TextContent.Should().Be("model");
+        // Send button lives in the footer row now
+        cut.Find(".mud-message-input-footer button[aria-label='Send message']").Should().NotBeNull();
+    }
+
+    [Fact]
+    public void FooterEnd_Provided_RendersRightAlignedBeforeSendButton()
+    {
+        // Act
+        var cut = Render<MudMessageInput>(parameters => parameters
+            .Add(p => p.FooterEnd, builder => builder.AddMarkupContent(0, "<span id='settings-stub'>settings</span>")));
+
+        // Assert
+        var footerEnd = cut.Find(".mud-message-input-footer-end");
+        footerEnd.QuerySelector("#settings-stub").Should().NotBeNull();
     }
 
     Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
