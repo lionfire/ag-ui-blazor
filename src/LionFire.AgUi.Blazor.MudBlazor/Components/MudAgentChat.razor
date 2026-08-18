@@ -52,6 +52,8 @@
         <MudMessageInput OnSend="@SendMessageAsync"
                          Placeholder="@GetInputPlaceholder()"
                          Disabled="@(_agent == null)"
+                         InitialDraft="@InitialDraft"
+                         OnDraftChanged="@OnDraftChanged"
                          FooterStart="@ComposerFooterStart"
                          FooterEnd="@ComposerFooterEnd" />
     </div>

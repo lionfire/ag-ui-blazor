@@ -6,7 +6,9 @@
     {
         <div class="mud-message-input-field-row">
             <MudTextField @ref="_textField"
-                          @bind-Value="_message"
+                          Value="@_message"
+                          ValueChanged="@OnValueChangedAsync"
+                          T="string"
                           Placeholder="@Placeholder"
                           Lines="1"
                           AutoGrow="true"
@@ -36,7 +38,9 @@
     else
     {
         <MudTextField @ref="_textField"
-                      @bind-Value="_message"
+                      Value="@_message"
+                      ValueChanged="@OnValueChangedAsync"
+                      T="string"
                       Placeholder="@Placeholder"
                       Lines="1"
                       AutoGrow="true"

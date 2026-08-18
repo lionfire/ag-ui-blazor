@@ -161,6 +161,27 @@ public partial class MudAgentChat : ComponentBase, IDisposable
     [Parameter]
     public Func<ChatOptions?>? ChatOptionsProvider { get; set; }
 
+    /// <summary>
+    /// Seed text for the composer, applied once when this component is created.
+    /// Forwarded to <see cref="MudMessageInput.InitialDraft"/>.
+    /// </summary>
+    /// <remarks>
+    /// On Blazor Server the composer subtree is destroyed and re-created on every
+    /// conversation switch and every circuit reconnect, so unsent text is lost unless the
+    /// consumer holds it outside the component. This parameter plus
+    /// <see cref="OnDraftChanged"/> are that seam; the component itself stores nothing.
+    /// </remarks>
+    [Parameter]
+    public string? InitialDraft { get; set; }
+
+    /// <summary>
+    /// Raised with the composer's full current text whenever it changes, including the
+    /// empty string after a send. Forwarded from
+    /// <see cref="MudMessageInput.OnDraftChanged"/>.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnDraftChanged { get; set; }
+
     #endregion
 
     #region Injected Services
