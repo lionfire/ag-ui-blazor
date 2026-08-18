@@ -87,16 +87,12 @@
     opacity: 1;
 }
 
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-    .mud-code-block {
-        background-color: var(--mud-palette-surface);
-    }
-
-    .mud-code-block-header {
-        background-color: rgba(255, 255, 255, 0.05);
-    }
-}
+/* Review item R-10: a `@media (prefers-color-scheme: dark)` block lived here and
+   re-stated the code-block surface and header background, so a code block inside a light
+   app theme on a dark-mode OS (or the reverse) picked the wrong one. It is removed rather
+   than rewritten: the base rules at the top of this file already use
+   --mud-palette-surface and --mud-palette-background-grey, which carry whichever of
+   axi-web's 12 named themes is active. Do not reintroduce an OS-keyed override. */
 
 /* Selection styling within code blocks */
 .mud-code-block ::deep pre code::selection,
