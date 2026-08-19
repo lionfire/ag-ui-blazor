@@ -1,6 +1,15 @@
 /**
  * MudBlazor-compatible syntax highlighting theme for highlight.js
  * Designed to work with both light and dark MudBlazor themes.
+ *
+ * Theme switch is `.mud-theme-dark`, not `prefers-color-scheme` (chat-drawer spec
+ * amendment § A6). The class is the same signal MudThemeProvider's IsDarkMode drives, so
+ * the highlight palette always agrees with the surrounding app chrome. An OS-media-query
+ * palette would disagree with it whenever the OS setting and the app's theme choice
+ * differ — light code on a dark panel, or the reverse — which reads as breakage inside a
+ * drawer whose surface already follows the app theme rather than the OS (spec § 7.5).
+ * Two palettes, one switch, driven by the app: the `.mud-theme-dark` block below is that
+ * switch; do not reintroduce a `@media (prefers-color-scheme: dark)` block here.
  */
 
 /* Base styles */
@@ -123,109 +132,10 @@
 }
 
 /* === Dark Theme === */
-/* Applied when system prefers dark mode or MudBlazor is in dark mode */
-
-@media (prefers-color-scheme: dark) {
-    .hljs {
-        color: #e1e4e8;
-    }
-
-    /* Comments */
-    .hljs-comment,
-    .hljs-quote {
-        color: #8b949e;
-    }
-
-    /* Keywords */
-    .hljs-keyword,
-    .hljs-selector-tag,
-    .hljs-subst {
-        color: #ff7b72;
-    }
-
-    /* Strings */
-    .hljs-string,
-    .hljs-doctag,
-    .hljs-template-variable {
-        color: #a5d6ff;
-    }
-
-    /* Numbers */
-    .hljs-number,
-    .hljs-literal,
-    .hljs-variable,
-    .hljs-template-tag,
-    .hljs-tag .hljs-attr {
-        color: #79c0ff;
-    }
-
-    /* Functions */
-    .hljs-title,
-    .hljs-section,
-    .hljs-attribute,
-    .hljs-type,
-    .hljs-class .hljs-title,
-    .hljs-title.class_ {
-        color: #d2a8ff;
-    }
-
-    /* Built-in types and classes */
-    .hljs-built_in,
-    .hljs-builtin-name {
-        color: #79c0ff;
-    }
-
-    /* Names */
-    .hljs-name,
-    .hljs-selector-id,
-    .hljs-selector-class,
-    .hljs-tag {
-        color: #7ee787;
-    }
-
-    /* Meta and preprocessor */
-    .hljs-meta,
-    .hljs-meta .hljs-keyword,
-    .hljs-meta .hljs-string {
-        color: #ffa657;
-    }
-
-    /* Symbols and operators */
-    .hljs-symbol,
-    .hljs-bullet,
-    .hljs-link {
-        color: #ffa657;
-    }
-
-    /* Additions and deletions (diff) */
-    .hljs-addition {
-        color: #7ee787;
-        background-color: rgba(46, 160, 67, 0.15);
-    }
-
-    .hljs-deletion {
-        color: #ffa198;
-        background-color: rgba(248, 81, 73, 0.15);
-    }
-
-    /* Regex */
-    .hljs-regexp {
-        color: #a5d6ff;
-    }
-
-    /* Property */
-    .hljs-property {
-        color: #79c0ff;
-    }
-
-    /* Punctuation */
-    .hljs-punctuation {
-        color: #c9d1d9;
-    }
-}
+/* Applied when MudBlazor is in dark mode — keyed off `.mud-theme-dark`, see header note. */
 
 /* MudBlazor theme-aware classes */
-/* These can be used when MudBlazor theme is explicitly set */
+/* This is the one dark-theme switch; there is no `prefers-color-scheme` counterpart. */
 
 .mud-theme-dark .hljs {
     color: #e1e4e8;
